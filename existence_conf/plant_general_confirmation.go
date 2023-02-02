@@ -8,14 +8,14 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func (c *ExistenceConf) plantExistenceConf(mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, exconfErrMsg *string, errs *[]error, mtx *sync.Mutex, wg *sync.WaitGroup, log *logger.Logger) {
+func (c *ExistenceConf) itemPlantGeneralExistenceConf(mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, exconfErrMsg *string, errs *[]error, mtx *sync.Mutex, wg *sync.WaitGroup, log *logger.Logger) {
 	defer wg.Done()
 	wg2 := sync.WaitGroup{}
 	exReqTimes := 0
 
 	items := input.Header.Item
 	for _, item := range items {
-		plant, bpID, err := getPlantExistenceConfKey(mapper, &item, exconfErrMsg)
+		plant, bpID, err := getItemPlantGeneralExistenceConfKey(mapper, &item, exconfErrMsg)
 		if err != nil {
 			*errs = append(*errs, err)
 			return
@@ -28,7 +28,7 @@ func (c *ExistenceConf) plantExistenceConf(mapper ExConfMapper, input *dpfm_api_
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
-			res, err := c.plantExistenceConfRequest(plant, bpID, queueName, input, existenceMap, mtx, log)
+			res, err := c.plantGeneralExistenceConfRequest(plant, bpID, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
 				*errs = append(*errs, err)
@@ -46,7 +46,7 @@ func (c *ExistenceConf) plantExistenceConf(mapper ExConfMapper, input *dpfm_api_
 	}
 }
 
-func (c *ExistenceConf) plantExistenceConfRequest(plant string, bpID int, queueName string, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
+func (c *ExistenceConf) plantGeneralExistenceConfRequest(plant string, bpID int, queueName string, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
 	keys := newResult(map[string]interface{}{
 		"BusinessPartner": bpID,
 		"Plant":           plant,
@@ -75,7 +75,7 @@ func (c *ExistenceConf) plantExistenceConfRequest(plant string, bpID int, queueN
 	return "", nil
 }
 
-func getPlantExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) (string, int, error) {
+func getItemPlantGeneralExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) (string, int, error) {
 	var plant string
 	var bpID int
 	var err error

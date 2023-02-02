@@ -19,14 +19,10 @@ APIサービス URL: https://xxx.xxx.io/api/API_ORDERS_SRV/creates/
 data-platform-api-orders-creates-rmq-kube には、次の API をコールするためのリソースが含まれています。  
 
 * A_Header（オーダー - ヘッダデータ）
-* A_HeaderPartner（オーダー - ヘッダ取引先データ）
-* A_HeaderPartnerPlant（オーダー - ヘッダ取引先プラントデータ）
-* A_HeaderPartnerContact（オーダー - ヘッダ取引先コンタクトデータ）
 * A_Item（オーダー - 明細データ）
-* A_ItemPartner（オーダー - 明細取引先データ）
-* A_ItemPartnerPlant（オーダー - 明細取引先プラントデータ）
 * A_ItemPricingElement（オーダー - 明細取引先プラントデータ）
 * A_ItemScheduleLine（オーダー - 明細納入日程行データ）
+* A_Partner（オーダー - 取引先データ）
 * A_Address（オーダー - 住所データ）
 
 ## API への 値入力条件 の 初期値

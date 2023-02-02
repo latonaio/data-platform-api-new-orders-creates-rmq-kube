@@ -25,6 +25,9 @@ func (c *DPFMAPICaller) createSqlProcess(
 	var header *dpfm_api_output_formatter.Header
 	var item *[]dpfm_api_output_formatter.Item
 	var itemPricingElement *[]dpfm_api_output_formatter.ItemPricingElement
+	var itemScheduleLine *[]dpfm_api_output_formatter.ItemScheduleLine
+	var address *[]dpfm_api_output_formatter.Address
+	var partner *[]dpfm_api_output_formatter.Partner
 	for _, fn := range accepter {
 		switch fn {
 		case "Header":
@@ -33,6 +36,12 @@ func (c *DPFMAPICaller) createSqlProcess(
 			item = c.itemCreateSql(nil, mtx, input, output, subfuncSDC, errs, log)
 		case "ItemPricingElement":
 			itemPricingElement = c.itemPricingElementCreateSql(nil, mtx, input, output, subfuncSDC, errs, log)
+		case "ItemScheduleLine":
+			itemScheduleLine = c.itemScheduleLineCreateSql(nil, mtx, input, output, subfuncSDC, errs, log)
+		case "Partner":
+			partner = c.partnerCreateSql(nil, mtx, input, output, subfuncSDC, errs, log)
+		case "Address":
+			address = c.addressCreateSql(nil, mtx, input, output, subfuncSDC, errs, log)
 		default:
 
 		}
@@ -42,6 +51,9 @@ func (c *DPFMAPICaller) createSqlProcess(
 		Header:             header,
 		Item:               item,
 		ItemPricingElement: itemPricingElement,
+		ItemScheduleLine:   itemScheduleLine,
+		Address:            address,
+		Partner:            partner,
 	}
 
 	return data
@@ -103,7 +115,6 @@ func (c *DPFMAPICaller) headerCreateSql(
 	}
 	res.Success()
 	if !checkResult(res) {
-		// err = xerrors.New("Header Data cannot insert")
 		output.SQLUpdateResult = getBoolPtr(false)
 		output.SQLUpdateError = "Header Data cannot insert"
 		return nil
@@ -113,7 +124,7 @@ func (c *DPFMAPICaller) headerCreateSql(
 		output.SQLUpdateResult = getBoolPtr(true)
 	}
 
-	data := dpfm_api_output_formatter.ConvertToHeaderFromCreates(subfuncSDC)
+	data := dpfm_api_output_formatter.ConvertToHeaderCreates(subfuncSDC)
 
 	return data
 }
@@ -140,7 +151,6 @@ func (c *DPFMAPICaller) itemCreateSql(
 		}
 		res.Success()
 		if !checkResult(res) {
-			// err = xerrors.New("Item Data cannot insert")
 			output.SQLUpdateResult = getBoolPtr(false)
 			output.SQLUpdateError = "Item Data cannot insert"
 			return nil
@@ -151,7 +161,7 @@ func (c *DPFMAPICaller) itemCreateSql(
 		output.SQLUpdateResult = getBoolPtr(true)
 	}
 
-	data := dpfm_api_output_formatter.ConvertToItemFromCreates(subfuncSDC)
+	data := dpfm_api_output_formatter.ConvertToItemCreates(subfuncSDC)
 
 	return data
 }
@@ -179,7 +189,6 @@ func (c *DPFMAPICaller) itemPricingElementCreateSql(
 		}
 		res.Success()
 		if !checkResult(res) {
-			// err = xerrors.New("Item Data cannot insert")
 			output.SQLUpdateResult = getBoolPtr(false)
 			output.SQLUpdateError = "Item Pricing Element Data cannot insert"
 			return nil
@@ -190,7 +199,121 @@ func (c *DPFMAPICaller) itemPricingElementCreateSql(
 		output.SQLUpdateResult = getBoolPtr(true)
 	}
 
-	data := dpfm_api_output_formatter.ConvertToItemPricingElementFromCreates(subfuncSDC)
+	data := dpfm_api_output_formatter.ConvertToItemPricingElementCreates(subfuncSDC)
+
+	return data
+}
+
+func (c *DPFMAPICaller) itemScheduleLineCreateSql(
+	ctx context.Context,
+	mtx *sync.Mutex,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	subfuncSDC *sub_func_complementer.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) *[]dpfm_api_output_formatter.ItemScheduleLine {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	sessionID := input.RuntimeSessionID
+	// data_platform_orders_item_schedule_line_dataの更新
+	for _, itemScheduleLineData := range *subfuncSDC.Message.ItemScheduleLine {
+		res, err := c.rmq.SessionKeepRequest(ctx, c.conf.RMQ.QueueToSQL()[0], map[string]interface{}{"message": itemScheduleLineData, "function": "OrdersItemScheduleLine", "runtime_session_id": sessionID})
+		if err != nil {
+			err = xerrors.Errorf("rmq error: %w", err)
+			log.Error(err)
+			return nil
+		}
+		res.Success()
+		if !checkResult(res) {
+			output.SQLUpdateResult = getBoolPtr(false)
+			output.SQLUpdateError = "Item Schedule Line Data cannot insert"
+			return nil
+		}
+	}
+
+	if output.SQLUpdateResult == nil {
+		output.SQLUpdateResult = getBoolPtr(true)
+	}
+
+	data := dpfm_api_output_formatter.ConvertToItemScheduleLineCreates(subfuncSDC)
+
+	return data
+}
+
+func (c *DPFMAPICaller) partnerCreateSql(
+	ctx context.Context,
+	mtx *sync.Mutex,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	subfuncSDC *sub_func_complementer.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) *[]dpfm_api_output_formatter.Partner {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	sessionID := input.RuntimeSessionID
+	// data_platform_orders_partner_dataの更新
+	for _, partnerData := range *subfuncSDC.Message.Partner {
+		res, err := c.rmq.SessionKeepRequest(ctx, c.conf.RMQ.QueueToSQL()[0], map[string]interface{}{"message": partnerData, "function": "OrdersPartner", "runtime_session_id": sessionID})
+		if err != nil {
+			err = xerrors.Errorf("rmq error: %w", err)
+			log.Error(err)
+			return nil
+		}
+		res.Success()
+		if !checkResult(res) {
+			output.SQLUpdateResult = getBoolPtr(false)
+			output.SQLUpdateError = "Partner Data cannot insert"
+			return nil
+		}
+	}
+
+	if output.SQLUpdateResult == nil {
+		output.SQLUpdateResult = getBoolPtr(true)
+	}
+
+	data := dpfm_api_output_formatter.ConvertToPartnerCreates(subfuncSDC)
+
+	return data
+}
+
+func (c *DPFMAPICaller) addressCreateSql(
+	ctx context.Context,
+	mtx *sync.Mutex,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	subfuncSDC *sub_func_complementer.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) *[]dpfm_api_output_formatter.Address {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	sessionID := input.RuntimeSessionID
+	// data_platform_orders_address_dataの更新
+	for _, addressData := range *subfuncSDC.Message.Address {
+		res, err := c.rmq.SessionKeepRequest(ctx, c.conf.RMQ.QueueToSQL()[0], map[string]interface{}{"message": addressData, "function": "OrdersAddress", "runtime_session_id": sessionID})
+		if err != nil {
+			err = xerrors.Errorf("rmq error: %w", err)
+			log.Error(err)
+			return nil
+		}
+		res.Success()
+		if !checkResult(res) {
+			output.SQLUpdateResult = getBoolPtr(false)
+			output.SQLUpdateError = "Address Data cannot insert"
+			return nil
+		}
+	}
+
+	if output.SQLUpdateResult == nil {
+		output.SQLUpdateResult = getBoolPtr(true)
+	}
+
+	data := dpfm_api_output_formatter.ConvertToAddressCreates(subfuncSDC)
 
 	return data
 }
@@ -220,7 +343,7 @@ func (c *DPFMAPICaller) headerUpdateSql(
 		output.SQLUpdateResult = getBoolPtr(true)
 	}
 
-	data := dpfm_api_output_formatter.ConvertToHeaderFromUpdates(req)
+	data := dpfm_api_output_formatter.ConvertToHeaderUpdates(req)
 
 	return data
 }
@@ -253,7 +376,7 @@ func (c *DPFMAPICaller) itemUpdateSql(
 		output.SQLUpdateResult = getBoolPtr(true)
 	}
 
-	data := dpfm_api_output_formatter.ConvertToItemFromUpdates(req)
+	data := dpfm_api_output_formatter.ConvertToItemUpdates(req)
 
 	return data
 }
@@ -288,7 +411,7 @@ func (c *DPFMAPICaller) itemPricingElementUpdateSql(
 		output.SQLUpdateResult = getBoolPtr(true)
 	}
 
-	data := dpfm_api_output_formatter.ConvertToItemPricingElementFromUpdates(req)
+	data := dpfm_api_output_formatter.ConvertToItemPricingElementUpdates(req)
 
 	return data
 }

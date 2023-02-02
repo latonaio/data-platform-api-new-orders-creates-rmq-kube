@@ -44,7 +44,7 @@ type Item struct {
 	StockConfirmationPlant                        *string  `json:"StockConfirmationPlant"`
 	StockConfirmationPlantTimeZone                *string  `json:"StockConfirmationPlantTimeZone"`
 	ProductIsBatchManagedInStockConfirmationPlant *bool    `json:"ProductIsBatchManagedInStockConfirmationPlant"`
-	BatchMgmtPolicyStockConfirmationInPlant       *string  `json:"BatchMgmtPolicyStockConfirmationInPlant"`
+	BatchMgmtPolicyInStockConfirmationPlant       *string  `json:"BatchMgmtPolicyInStockConfirmationPlant"`
 	StockConfirmationPlantBatch                   *string  `json:"StockConfirmationPlantBatch"`
 	StockConfirmationPlantBatchValidityStartDate  *string  `json:"StockConfirmationPlantBatchValidityStartDate"`
 	StockConfirmationPlantBatchValidityEndDate    *string  `json:"StockConfirmationPlantBatchValidityEndDate"`
@@ -59,6 +59,8 @@ type Item struct {
 	ItemGrossWeight                               *float32 `json:"ItemGrossWeight"`
 	ProductNetWeight                              *float32 `json:"ProductNetWeight"`
 	ItemNetWeight                                 *float32 `json:"ItemNetWeight"`
+	InternalCapacityQuantity                      *float32 `json:"InternalCapacityQuantity"`
+	InternalCapacityQuantityUnit                  *string  `json:"InternalCapacityQuantityUnit"`
 	NetAmount                                     *float32 `json:"NetAmount"`
 	TaxAmount                                     *float32 `json:"TaxAmount"`
 	GrossAmount                                   *float32 `json:"GrossAmount"`

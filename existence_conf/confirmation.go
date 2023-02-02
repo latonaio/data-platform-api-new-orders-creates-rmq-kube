@@ -34,7 +34,7 @@ func NewExistenceConf(ctx context.Context, c *config.Conf, rmq *rabbitmq.Rabbitm
 }
 
 // Confirm returns existenceMap, allExist, err
-func (c *ExistenceConf) Conf(data *dpfm_api_input_reader.SDC, ssdc *dpfm_api_output_formatter.SDC, l *logger.Logger) (allExist bool, errs []error) {
+func (c *ExistenceConf) Conf(data *dpfm_api_input_reader.SDC, ssdc *dpfm_api_output_formatter.SDC, accepter []string, l *logger.Logger) (allExist bool, errs []error) {
 	var resMsg string
 	existenceMap := make([]bool, 0, 12)
 	wg := sync.WaitGroup{}
@@ -52,37 +52,83 @@ func (c *ExistenceConf) Conf(data *dpfm_api_input_reader.SDC, ssdc *dpfm_api_out
 			continue
 		}
 		tabletag := *v.Tabletag
+		apiName := v.APIName
+		if !contains(accepter, apiName) {
+			continue
+		}
 		switch tabletag {
-		case "BusinessPartnerGeneral":
+		case "ProductMasterGeneral":
 			wg.Add(1)
-			go c.bpGeneralExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			go c.itemProductExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+		case "BusinessPartnerGeneral":
+			switch apiName {
+			case "Header":
+				wg.Add(1)
+				go c.headerBPGeneralExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			case "Item":
+				wg.Add(1)
+				go c.itemBPGeneralExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			}
 		case "PlantGeneral":
 			wg.Add(1)
-			go c.plantExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			go c.itemPlantGeneralExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
 		case "Address":
 			wg.Add(1)
 			go c.addressExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
 		case "Currency":
 			wg.Add(1)
-			go c.currencyExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			go c.headerCurrencyExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+		case "Country":
+			wg.Add(1)
+			go c.headerCountryExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
 		case "Incoterms":
-			wg.Add(1)
-			go c.incotermsExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			switch apiName {
+			case "Header":
+				wg.Add(1)
+				go c.headerIncotermsExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			case "Item":
+				wg.Add(1)
+				go c.itemIncotermsExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			}
 		case "PaymentMethod":
-			wg.Add(1)
-			go c.paymentMethodExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			switch apiName {
+			case "Header":
+				wg.Add(1)
+				go c.headerPaymentMethodExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			case "Item":
+				wg.Add(1)
+				go c.itemPaymentMethodExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			}
 		case "PaymentTerms":
+			switch apiName {
+			case "Header":
+				wg.Add(1)
+				go c.headerPaymentTermsExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			case "Item":
+				wg.Add(1)
+				go c.itemPaymentTermsExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			}
+		// case "SupplyChainRelationshipGeneral":
+		// 	wg.Add(1)
+		// 	go c.supplyChainRelationshipGeneralExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+		// case "SupplyChainRelationshipBillingRelation":
+		// 	wg.Add(1)
+		// 	go c.supplyChainRelationshipBillingRelationExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+		// case "SupplyChainRelationshipPaymentRelation":
+		// 	wg.Add(1)
+		// 	go c.supplyChainRelationshipPaymentRelationExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+		case "Batch":
 			wg.Add(1)
-			go c.paymentTermsExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
-		case "SupplyChainRelationshipGeneral":
+			go c.itemBatchExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+		case "QuantityUnit":
 			wg.Add(1)
-			go c.supplyChainRelationshipGeneralExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
-		case "SupplyChainRelationshipBillingRelation":
+			go c.itemQuantityUnitExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+		case "StorageLocation":
 			wg.Add(1)
-			go c.supplyChainRelationshipBillingRelationExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
-		case "SupplyChainRelationshipPaymentRelation":
+			go c.itemStorageLocationExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+		case "Project":
 			wg.Add(1)
-			go c.supplyChainRelationshipPaymentRelationExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
+			go c.itemProjectExistenceConf(v, data, &existenceMap, &resMsg, &errs, mtx, &wg, l)
 		}
 	}
 
@@ -112,19 +158,14 @@ func (c *ExistenceConf) getExConfMapper(serviceLabel string) (*[]ExConfMapper, e
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
+	res := make([]ExConfMapper, 0)
 
-	var res []ExConfMapper
-
-	for i := 0; true; i++ {
+	i := 0
+	for rows.Next() {
+		i++
 		data := ExConfMapper{}
 
-		if !rows.Next() {
-			if i == 0 {
-				return nil, fmt.Errorf("'data_platform_ex_conf_api_mapper_data'テーブルに対象のレコードが存在しません。")
-			} else {
-				break
-			}
-		}
 		err := rows.Scan(
 			&data.ServiceLabel,
 			&data.APIType,
@@ -143,6 +184,9 @@ func (c *ExistenceConf) getExConfMapper(serviceLabel string) (*[]ExConfMapper, e
 		}
 
 		res = append(res, data)
+	}
+	if i == 0 {
+		return nil, fmt.Errorf("'data_platform_ex_conf_api_mapper_data'テーブルに対象のレコードが存在しません。")
 	}
 
 	return &res, nil
@@ -216,4 +260,13 @@ func getQueueName(mapper ExConfMapper) (string, error) {
 	queueName := *mapper.ExConfAPIQueueName
 
 	return queueName, nil
+}
+
+func contains(slice []string, target string) bool {
+	for _, v := range slice {
+		if v == target {
+			return true
+		}
+	}
+	return false
 }

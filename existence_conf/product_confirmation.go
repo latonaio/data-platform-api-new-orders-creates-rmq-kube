@@ -8,15 +8,14 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func (c *ExistenceConf) headerCurrencyExistenceConf(mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, exconfErrMsg *string, errs *[]error, mtx *sync.Mutex, wg *sync.WaitGroup, log *logger.Logger) {
+func (c *ExistenceConf) itemProductExistenceConf(mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, exconfErrMsg *string, errs *[]error, mtx *sync.Mutex, wg *sync.WaitGroup, log *logger.Logger) {
 	defer wg.Done()
 	wg2 := sync.WaitGroup{}
 	exReqTimes := 0
 
-	headers := make([]dpfm_api_input_reader.Header, 0, 1)
-	headers = append(headers, input.Header)
-	for _, header := range headers {
-		currency, err := getHeaderCurrencyExistenceConfKey(mapper, &header, exconfErrMsg)
+	items := input.Header.Item
+	for _, item := range items {
+		product, err := getItemProductMasterGeneralExistenceConfKey(mapper, &item, exconfErrMsg)
 		if err != nil {
 			*errs = append(*errs, err)
 			return
@@ -29,7 +28,7 @@ func (c *ExistenceConf) headerCurrencyExistenceConf(mapper ExConfMapper, input *
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
-			res, err := c.currencyExistenceConfRequest(currency, queueName, input, existenceMap, mtx, log)
+			res, err := c.productMasterGeneralExistenceConfRequest(product, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
 				*errs = append(*errs, err)
@@ -47,9 +46,9 @@ func (c *ExistenceConf) headerCurrencyExistenceConf(mapper ExConfMapper, input *
 	}
 }
 
-func (c *ExistenceConf) currencyExistenceConfRequest(currency string, queueName string, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
+func (c *ExistenceConf) productMasterGeneralExistenceConfRequest(product string, queueName string, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
 	keys := newResult(map[string]interface{}{
-		"Currency": currency,
+		"ProductMasterGeneral": product,
 	})
 	exist := false
 	defer func() {
@@ -62,7 +61,7 @@ func (c *ExistenceConf) currencyExistenceConfRequest(currency string, queueName 
 	if err != nil {
 		return "", xerrors.Errorf("request create error: %w", err)
 	}
-	req.CurrencyReturn.Currency = currency
+	req.ProductMasterGeneralReturn.Product = product
 
 	exist, err = c.exconfRequest(req, queueName, log)
 	if err != nil {
@@ -71,26 +70,27 @@ func (c *ExistenceConf) currencyExistenceConfRequest(currency string, queueName 
 	if !exist {
 		return keys.fail(), nil
 	}
+
 	return "", nil
 }
 
-func getHeaderCurrencyExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) (string, error) {
-	var currency string
+func getItemProductMasterGeneralExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) (string, error) {
+	var product string
 	var err error
 
 	switch mapper.Field {
-	case "TransactionCurrency":
-		if header.TransactionCurrency == nil {
+	case "Product":
+		if item.Product == nil {
 			err = xerrors.Errorf("cannot specify null keys")
 			return "", err
 		}
-		if header.TransactionCurrency != nil {
-			if len(*header.TransactionCurrency) == 0 {
+		if item.Product != nil {
+			if len(*item.Product) == 0 {
 				err = xerrors.Errorf("cannot specify null keys")
 				return "", err
 			}
 		}
-		currency = *header.TransactionCurrency
+		product = *item.Product
 	}
-	return currency, nil
+	return product, nil
 }

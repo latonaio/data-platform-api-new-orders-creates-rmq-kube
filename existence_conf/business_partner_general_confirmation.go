@@ -8,7 +8,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func (c *ExistenceConf) bpGeneralExistenceConf(mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, exconfErrMsg *string, errs *[]error, mtx *sync.Mutex, wg *sync.WaitGroup, log *logger.Logger) {
+func (c *ExistenceConf) headerBPGeneralExistenceConf(mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, exconfErrMsg *string, errs *[]error, mtx *sync.Mutex, wg *sync.WaitGroup, log *logger.Logger) {
 	defer wg.Done()
 	wg2 := sync.WaitGroup{}
 	exReqTimes := 0
@@ -16,7 +16,7 @@ func (c *ExistenceConf) bpGeneralExistenceConf(mapper ExConfMapper, input *dpfm_
 	headers := make([]dpfm_api_input_reader.Header, 0, 1)
 	headers = append(headers, input.Header)
 	for _, header := range headers {
-		bpID, err := getBPGeneralExistenceConfKey(mapper, &header, exconfErrMsg)
+		bpID, err := getHeaderBPGeneralExistenceConfKey(mapper, &header, exconfErrMsg)
 		if err != nil {
 			*errs = append(*errs, err)
 			return
@@ -29,7 +29,7 @@ func (c *ExistenceConf) bpGeneralExistenceConf(mapper ExConfMapper, input *dpfm_
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
-			res, err := c.bpGeneralExistenceConfRequest(bpID, queueName, input, existenceMap, mtx, log)
+			res, err := c.bPGeneralExistenceConfRequest(bpID, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
 				*errs = append(*errs, err)
@@ -47,7 +47,45 @@ func (c *ExistenceConf) bpGeneralExistenceConf(mapper ExConfMapper, input *dpfm_
 	}
 }
 
-func (c *ExistenceConf) bpGeneralExistenceConfRequest(bpID int, queueName string, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
+func (c *ExistenceConf) itemBPGeneralExistenceConf(mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, exconfErrMsg *string, errs *[]error, mtx *sync.Mutex, wg *sync.WaitGroup, log *logger.Logger) {
+	defer wg.Done()
+	wg2 := sync.WaitGroup{}
+	exReqTimes := 0
+
+	items := input.Header.Item
+	for _, item := range items {
+		bpID, err := getItemBPGeneralExistenceConfKey(mapper, &item, exconfErrMsg)
+		if err != nil {
+			*errs = append(*errs, err)
+			return
+		}
+		queueName, err := getQueueName(mapper)
+		if err != nil {
+			*errs = append(*errs, err)
+			return
+		}
+		wg2.Add(1)
+		exReqTimes++
+		go func() {
+			res, err := c.bPGeneralExistenceConfRequest(bpID, queueName, input, existenceMap, mtx, log)
+			if err != nil {
+				mtx.Lock()
+				*errs = append(*errs, err)
+				mtx.Unlock()
+			}
+			if res != "" {
+				*exconfErrMsg = res
+			}
+			wg2.Done()
+		}()
+	}
+	wg2.Wait()
+	if exReqTimes == 0 {
+		*existenceMap = append(*existenceMap, false)
+	}
+}
+
+func (c *ExistenceConf) bPGeneralExistenceConfRequest(bpID int, queueName string, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
 	keys := newResult(map[string]interface{}{
 		"BusinessPartner": bpID,
 	})
@@ -75,7 +113,7 @@ func (c *ExistenceConf) bpGeneralExistenceConfRequest(bpID int, queueName string
 	return "", nil
 }
 
-func getBPGeneralExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) (int, error) {
+func getHeaderBPGeneralExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) (int, error) {
 	var bpID int
 	var err error
 
@@ -92,6 +130,64 @@ func getBPGeneralExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_re
 			return 0, err
 		}
 		bpID = *header.Seller
+	case "BillToParty":
+		if header.BillToParty == nil {
+			err = xerrors.Errorf("cannot specify null keys")
+			return 0, err
+		}
+		bpID = *header.BillToParty
+	case "BillFromParty":
+		if header.BillFromParty == nil {
+			err = xerrors.Errorf("cannot specify null keys")
+			return 0, err
+		}
+		bpID = *header.BillFromParty
+	case "Payer":
+		if header.Payer == nil {
+			err = xerrors.Errorf("cannot specify null keys")
+			return 0, err
+		}
+		bpID = *header.Payer
+	case "Payee":
+		if header.Payee == nil {
+			err = xerrors.Errorf("cannot specify null keys")
+			return 0, err
+		}
+		bpID = *header.Payee
+	}
+
+	return bpID, nil
+}
+
+func getItemBPGeneralExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) (int, error) {
+	var bpID int
+	var err error
+
+	switch mapper.Field {
+	case "DeliverToParty":
+		if item.DeliverToParty == nil {
+			err = xerrors.Errorf("cannot specify null keys")
+			return 0, err
+		}
+		bpID = *item.DeliverToParty
+	case "DeliverFromParty":
+		if item.DeliverFromParty == nil {
+			err = xerrors.Errorf("cannot specify null keys")
+			return 0, err
+		}
+		bpID = *item.DeliverFromParty
+	case "StockConfirmationBusinessPartner":
+		if item.StockConfirmationBusinessPartner == nil {
+			err = xerrors.Errorf("cannot specify null keys")
+			return 0, err
+		}
+		bpID = *item.StockConfirmationBusinessPartner
+	case "ProductionPlantBusinessPartner":
+		if item.ProductionPlantBusinessPartner == nil {
+			err = xerrors.Errorf("cannot specify null keys")
+			return 0, err
+		}
+		bpID = *item.ProductionPlantBusinessPartner
 	}
 
 	return bpID, nil

@@ -8,7 +8,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func (c *ExistenceConf) incotermsExistenceConf(mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, exconfErrMsg *string, errs *[]error, mtx *sync.Mutex, wg *sync.WaitGroup, log *logger.Logger) {
+func (c *ExistenceConf) headerIncotermsExistenceConf(mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, exconfErrMsg *string, errs *[]error, mtx *sync.Mutex, wg *sync.WaitGroup, log *logger.Logger) {
 	defer wg.Done()
 	wg2 := sync.WaitGroup{}
 	exReqTimes := 0
@@ -16,7 +16,45 @@ func (c *ExistenceConf) incotermsExistenceConf(mapper ExConfMapper, input *dpfm_
 	headers := make([]dpfm_api_input_reader.Header, 0, 1)
 	headers = append(headers, input.Header)
 	for _, header := range headers {
-		incoterms, err := getIncotermsExistenceConfKey(mapper, &header, exconfErrMsg)
+		incoterms, err := getHeaderIncotermsExistenceConfKey(mapper, &header, exconfErrMsg)
+		if err != nil {
+			*errs = append(*errs, err)
+			return
+		}
+		queueName, err := getQueueName(mapper)
+		if err != nil {
+			*errs = append(*errs, err)
+			return
+		}
+		wg2.Add(1)
+		exReqTimes++
+		go func() {
+			res, err := c.incotermsExistenceConfRequest(incoterms, queueName, input, existenceMap, mtx, log)
+			if err != nil {
+				mtx.Lock()
+				*errs = append(*errs, err)
+				mtx.Unlock()
+			}
+			if res != "" {
+				*exconfErrMsg = res
+			}
+			wg2.Done()
+		}()
+	}
+	wg2.Wait()
+	if exReqTimes == 0 {
+		*existenceMap = append(*existenceMap, false)
+	}
+}
+
+func (c *ExistenceConf) itemIncotermsExistenceConf(mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, exconfErrMsg *string, errs *[]error, mtx *sync.Mutex, wg *sync.WaitGroup, log *logger.Logger) {
+	defer wg.Done()
+	wg2 := sync.WaitGroup{}
+	exReqTimes := 0
+
+	items := input.Header.Item
+	for _, item := range items {
+		incoterms, err := getItemIncotermsExistenceConfKey(mapper, &item, exconfErrMsg)
 		if err != nil {
 			*errs = append(*errs, err)
 			return
@@ -74,21 +112,44 @@ func (c *ExistenceConf) incotermsExistenceConfRequest(incoterms string, queueNam
 	return "", nil
 }
 
-func getIncotermsExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) (string, error) {
+func getHeaderIncotermsExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) (string, error) {
 	var incoterms string
 	var err error
 
-	if header.Incoterms == nil {
-		err = xerrors.Errorf("cannot specify null keys")
-		return "", err
-	}
-	if header.Incoterms != nil {
-		if len(*header.Incoterms) == 0 {
+	switch mapper.Field {
+	case "Incoterms":
+		if header.Incoterms == nil {
 			err = xerrors.Errorf("cannot specify null keys")
 			return "", err
 		}
+		if header.Incoterms != nil {
+			if len(*header.Incoterms) == 0 {
+				err = xerrors.Errorf("cannot specify null keys")
+				return "", err
+			}
+		}
+		incoterms = *header.Incoterms
 	}
-	incoterms = *header.Incoterms
+	return incoterms, nil
+}
 
+func getItemIncotermsExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) (string, error) {
+	var incoterms string
+	var err error
+
+	switch mapper.Field {
+	case "Incoterms":
+		if item.Incoterms == nil {
+			err = xerrors.Errorf("cannot specify null keys")
+			return "", err
+		}
+		if item.Incoterms != nil {
+			if len(*item.Incoterms) == 0 {
+				err = xerrors.Errorf("cannot specify null keys")
+				return "", err
+			}
+		}
+		incoterms = *item.Incoterms
+	}
 	return incoterms, nil
 }

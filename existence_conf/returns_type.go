@@ -8,19 +8,29 @@ type Returns struct {
 	BusinessPartnerID                            *int                                          `json:"business_partner"`
 	Filepath                                     string                                        `json:"filepath"`
 	ServiceLabel                                 string                                        `json:"service_label"`
+	ProductMasterGeneralReturn                   ProductMasterGeneralReturn                    `json:"ProductMasterGeneral"`
 	BPGeneralReturn                              BPGeneralReturn                               `json:"BusinessPartnerGeneral"`
 	PlantGeneralReturn                           PlantGeneralReturn                            `json:"PlantGeneral"`
 	SupplyChainRelationshipGeneralReturn         *SupplyChainRelationshipGeneralReturn         `json:"SupplyChainRelationshipGeneral,omitempty"`
 	SupplyChainRelationshipBillingRelationReturn *SupplyChainRelationshipBillingRelationReturn `json:"SupplyChainRelationshipBillingRelation,omitempty"`
 	SupplyChainRelationshipPaymentRelationReturn *SupplyChainRelationshipPaymentRelationReturn `json:"SupplyChainRelationshipPaymentRelation,omitempty"`
 	CurrencyReturn                               CurrencyReturn                                `json:"Currency"`
+	CountryReturn                                CountryReturn                                 `json:"Country"`
 	IncotermsReturn                              IncotermsReturn                               `json:"Incoterms"`
 	PaymentTermsReturn                           PaymentTermsReturn                            `json:"PaymentTerms"`
 	PaymentMethodReturn                          PaymentMethodReturn                           `json:"PaymentMethod"`
 	AddressReturn                                AddressReturn                                 `json:"Address"`
+	BatchReturn                                  BatchReturn                                   `json:"Batch"`
+	StorageLocationReturn                        StorageLocationReturn                         `json:"StorageLocation"`
+	QuantityUnitReturn                           QuantityUnitReturn                            `json:"QuantityUnit"`
+	ProjectReturn                                ProjectReturn                                 `json:"Project"`
 	APISchema                                    string                                        `json:"api_schema"`
 	Accepter                                     []string                                      `json:"accepter"`
 	Deleted                                      bool                                          `json:"deleted"`
+}
+
+type ProductMasterGeneralReturn struct {
+	Product string `json:"Product"`
 }
 
 type BPGeneralReturn struct {
@@ -63,6 +73,10 @@ type CurrencyReturn struct {
 	Currency string `json:"Currency"`
 }
 
+type CountryReturn struct {
+	Country string `json:"Country"`
+}
+
 type IncotermsReturn struct {
 	Incoterms string `json:"Incoterms"`
 }
@@ -78,4 +92,25 @@ type PaymentMethodReturn struct {
 type AddressReturn struct {
 	AddressID       int    `json:"AddressID"`
 	ValidityEndDate string `json:"ValidityEndDate"`
+}
+
+type BatchReturn struct {
+	BusinessPartner int    `json:"BusinessPartner"`
+	Product         string `json:"Product"`
+	Plant           string `json:"Plant"`
+	Batch           string `json:"Batch"`
+}
+
+type StorageLocationReturn struct {
+	BusinessPartner int    `json:"BusinessPartner"`
+	Plant           string `json:"Plant"`
+	StorageLocation string `json:"StorageLocation"`
+}
+
+type QuantityUnitReturn struct {
+	QuantityUnit string `json:"QuantityUnit"`
+}
+
+type ProjectReturn struct {
+	Project string `json:"Project"`
 }

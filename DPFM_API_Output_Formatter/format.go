@@ -5,7 +5,7 @@ import (
 	"data-platform-api-orders-creates-rmq-kube/sub_func_complementer"
 )
 
-func ConvertToHeaderFromCreates(subfuncSDC *sub_func_complementer.SDC) *Header {
+func ConvertToHeaderCreates(subfuncSDC *sub_func_complementer.SDC) *Header {
 	data := subfuncSDC.Message.Header
 
 	header := &Header{
@@ -59,7 +59,7 @@ func ConvertToHeaderFromCreates(subfuncSDC *sub_func_complementer.SDC) *Header {
 	return header
 }
 
-func ConvertToHeaderFromUpdates(headerUpdates *dpfm_api_processing_formatter.HeaderUpdates) *Header {
+func ConvertToHeaderUpdates(headerUpdates *dpfm_api_processing_formatter.HeaderUpdates) *Header {
 	data := headerUpdates
 
 	header := &Header{
@@ -91,7 +91,7 @@ func ConvertToHeaderFromUpdates(headerUpdates *dpfm_api_processing_formatter.Hea
 	return header
 }
 
-func ConvertToPartner(subfuncSDC *sub_func_complementer.SDC) *[]Partner {
+func ConvertToPartnerCreates(subfuncSDC *sub_func_complementer.SDC) *[]Partner {
 	var partner []Partner
 
 	for _, data := range *subfuncSDC.Message.Partner {
@@ -113,7 +113,7 @@ func ConvertToPartner(subfuncSDC *sub_func_complementer.SDC) *[]Partner {
 	return &partner
 }
 
-func ConvertToAddress(subfuncSDC *sub_func_complementer.SDC) *[]Address {
+func ConvertToAddressCreates(subfuncSDC *sub_func_complementer.SDC) *[]Address {
 	var address []Address
 
 	for _, data := range *subfuncSDC.Message.Address {
@@ -135,7 +135,7 @@ func ConvertToAddress(subfuncSDC *sub_func_complementer.SDC) *[]Address {
 	return &address
 }
 
-func ConvertToItemFromCreates(subfuncSDC *sub_func_complementer.SDC) *[]Item {
+func ConvertToItemCreates(subfuncSDC *sub_func_complementer.SDC) *[]Item {
 	var item []Item
 
 	for _, data := range *subfuncSDC.Message.Item {
@@ -169,7 +169,9 @@ func ConvertToItemFromCreates(subfuncSDC *sub_func_complementer.SDC) *[]Item {
 			BatchMgmtPolicyInDeliverToPlant:               data.BatchMgmtPolicyInDeliverToPlant,
 			DeliverToPlantBatch:                           data.DeliverToPlantBatch,
 			DeliverToPlantBatchValidityStartDate:          data.DeliverToPlantBatchValidityStartDate,
+			DeliverToPlantBatchValidityStartTime:          data.DeliverToPlantBatchValidityStartTime,
 			DeliverToPlantBatchValidityEndDate:            data.DeliverToPlantBatchValidityEndDate,
+			DeliverToPlantBatchValidityEndTime:            data.DeliverToPlantBatchValidityEndTime,
 			DeliverFromPlant:                              data.DeliverFromPlant,
 			DeliverFromPlantTimeZone:                      data.DeliverFromPlantTimeZone,
 			DeliverFromPlantStorageLocation:               data.DeliverFromPlantStorageLocation,
@@ -177,16 +179,20 @@ func ConvertToItemFromCreates(subfuncSDC *sub_func_complementer.SDC) *[]Item {
 			BatchMgmtPolicyInDeliverFromPlant:             data.BatchMgmtPolicyInDeliverFromPlant,
 			DeliverFromPlantBatch:                         data.DeliverFromPlantBatch,
 			DeliverFromPlantBatchValidityStartDate:        data.DeliverFromPlantBatchValidityStartDate,
+			DeliverFromPlantBatchValidityStartTime:        data.DeliverFromPlantBatchValidityStartTime,
 			DeliverFromPlantBatchValidityEndDate:          data.DeliverFromPlantBatchValidityEndDate,
+			DeliverFromPlantBatchValidityEndTime:          data.DeliverFromPlantBatchValidityEndTime,
 			DeliveryUnit:                                  data.DeliveryUnit,
 			StockConfirmationBusinessPartner:              data.StockConfirmationBusinessPartner,
 			StockConfirmationPlant:                        data.StockConfirmationPlant,
 			StockConfirmationPlantTimeZone:                data.StockConfirmationPlantTimeZone,
 			ProductIsBatchManagedInStockConfirmationPlant: data.ProductIsBatchManagedInStockConfirmationPlant,
-			BatchMgmtPolicyStockConfirmationInPlant:       data.BatchMgmtPolicyStockConfirmationInPlant,
+			BatchMgmtPolicyInStockConfirmationPlant:       data.BatchMgmtPolicyInStockConfirmationPlant,
 			StockConfirmationPlantBatch:                   data.StockConfirmationPlantBatch,
 			StockConfirmationPlantBatchValidityStartDate:  data.StockConfirmationPlantBatchValidityStartDate,
+			StockConfirmationPlantBatchValidityStartTime:  data.StockConfirmationPlantBatchValidityStartTime,
 			StockConfirmationPlantBatchValidityEndDate:    data.StockConfirmationPlantBatchValidityEndDate,
+			StockConfirmationPlantBatchValidityEndTime:    data.StockConfirmationPlantBatchValidityEndTime,
 			ServicesRenderingDate:                         data.ServicesRenderingDate,
 			OrderQuantityInBaseUnit:                       data.OrderQuantityInBaseUnit,
 			OrderQuantityInDeliveryUnit:                   data.OrderQuantityInDeliveryUnit,
@@ -198,6 +204,8 @@ func ConvertToItemFromCreates(subfuncSDC *sub_func_complementer.SDC) *[]Item {
 			ItemGrossWeight:                               data.ItemGrossWeight,
 			ProductNetWeight:                              data.ProductNetWeight,
 			ItemNetWeight:                                 data.ItemNetWeight,
+			InternalCapacityQuantity:                      data.InternalCapacityQuantity,
+			InternalCapacityQuantityUnit:                  data.InternalCapacityQuantityUnit,
 			NetAmount:                                     data.NetAmount,
 			TaxAmount:                                     data.TaxAmount,
 			GrossAmount:                                   data.GrossAmount,
@@ -210,7 +218,9 @@ func ConvertToItemFromCreates(subfuncSDC *sub_func_complementer.SDC) *[]Item {
 			BatchMgmtPolicyInProductionPlant:              data.BatchMgmtPolicyInProductionPlant,
 			ProductionPlantBatch:                          data.ProductionPlantBatch,
 			ProductionPlantBatchValidityStartDate:         data.ProductionPlantBatchValidityStartDate,
+			ProductionPlantBatchValidityStartTime:         data.ProductionPlantBatchValidityStartTime,
 			ProductionPlantBatchValidityEndDate:           data.ProductionPlantBatchValidityEndDate,
+			ProductionPlantBatchValidityEndTime:           data.ProductionPlantBatchValidityEndTime,
 			Incoterms:                                     data.Incoterms,
 			TransactionTaxClassification:                  data.TransactionTaxClassification,
 			ProductTaxClassificationBillToCountry:         data.ProductTaxClassificationBillToCountry,
@@ -239,13 +249,15 @@ func ConvertToItemFromCreates(subfuncSDC *sub_func_complementer.SDC) *[]Item {
 			ItemBlockStatus:                               data.ItemBlockStatus,
 			ItemDeliveryBlockStatus:                       data.ItemDeliveryBlockStatus,
 			ItemBillingBlockStatus:                        data.ItemBillingBlockStatus,
+			ItemIsCancelled:                               data.ItemIsCancelled,
+			ItemIsDeleted:                                 data.ItemIsDeleted,
 		})
 	}
 
 	return &item
 }
 
-func ConvertToItemFromUpdates(itemUpdates *[]dpfm_api_processing_formatter.ItemUpdates) *[]Item {
+func ConvertToItemUpdates(itemUpdates *[]dpfm_api_processing_formatter.ItemUpdates) *[]Item {
 	var item []Item
 
 	for _, data := range *itemUpdates {
@@ -272,7 +284,7 @@ func ConvertToItemFromUpdates(itemUpdates *[]dpfm_api_processing_formatter.ItemU
 	return &item
 }
 
-func ConvertToItemPricingElementFromCreates(subfuncSDC *sub_func_complementer.SDC) *[]ItemPricingElement {
+func ConvertToItemPricingElementCreates(subfuncSDC *sub_func_complementer.SDC) *[]ItemPricingElement {
 	var itemPricingElement []ItemPricingElement
 
 	for _, data := range *subfuncSDC.Message.ItemPricingElement {
@@ -302,7 +314,7 @@ func ConvertToItemPricingElementFromCreates(subfuncSDC *sub_func_complementer.SD
 	return &itemPricingElement
 }
 
-func ConvertToItemPricingElementFromUpdates(itemPricingElementUpdates *[]dpfm_api_processing_formatter.ItemPricingElementUpdates) *[]ItemPricingElement {
+func ConvertToItemPricingElementUpdates(itemPricingElementUpdates *[]dpfm_api_processing_formatter.ItemPricingElementUpdates) *[]ItemPricingElement {
 	var itemPricingElement []ItemPricingElement
 
 	for _, data := range *itemPricingElementUpdates {
@@ -316,7 +328,40 @@ func ConvertToItemPricingElementFromUpdates(itemPricingElementUpdates *[]dpfm_ap
 	return &itemPricingElement
 }
 
-func ConvertToItemScheduleLine(subfuncSDC *sub_func_complementer.SDC) *[]ItemScheduleLine {
+func ConvertToItemScheduleLineCreates(subfuncSDC *sub_func_complementer.SDC) *[]ItemScheduleLine {
+	var itemScheduleLine []ItemScheduleLine
+
+	for _, data := range *subfuncSDC.Message.ItemScheduleLine {
+
+		itemScheduleLine = append(itemScheduleLine, ItemScheduleLine{
+			OrderID:                                      data.OrderID,
+			OrderItem:                                    data.OrderItem,
+			ScheduleLine:                                 data.ScheduleLine,
+			SupplyChainRelationshipID:                    data.SupplyChainRelationshipID,
+			SupplyChainRelationshipStockConfPlantID:      data.SupplyChainRelationshipStockConfPlantID,
+			Product:                                      data.Product,
+			StockConfirmationBussinessPartner:            data.StockConfirmationBussinessPartner,
+			StockConfirmationPlant:                       data.StockConfirmationPlant,
+			StockConfirmationPlantTimeZone:               data.StockConfirmationPlantTimeZone,
+			StockConfirmationPlantBatch:                  data.StockConfirmationPlantBatch,
+			StockConfirmationPlantBatchValidityStartDate: data.StockConfirmationPlantBatchValidityStartDate,
+			StockConfirmationPlantBatchValidityEndDate:   data.StockConfirmationPlantBatchValidityEndDate,
+			RequestedDeliveryDate:                        data.RequestedDeliveryDate,
+			ConfirmedDeliveryDate:                        data.ConfirmedDeliveryDate,
+			OrderQuantityInBaseUnit:                      data.OrderQuantityInBaseUnit,
+			ConfirmedOrderQuantityByPDTAvailCheck:        data.ConfirmedOrderQuantityByPDTAvailCheck,
+			DeliveredQuantityInBaseUnit:                  data.DeliveredQuantityInBaseUnit,
+			OpenConfirmedQuantityInBaseUnit:              data.OpenConfirmedQuantityInBaseUnit,
+			StockIsFullyConfirmed:                        data.StockIsFullyConfirmed,
+			PlusMinusFlag:                                data.PlusMinusFlag,
+			ItemScheduleLineDeliveryBlockStatus:          data.ItemScheduleLineDeliveryBlockStatus,
+		})
+	}
+
+	return &itemScheduleLine
+}
+
+func ConvertToItemScheduleLineUpdates(subfuncSDC *sub_func_complementer.SDC) *[]ItemScheduleLine {
 	var itemScheduleLine []ItemScheduleLine
 
 	for _, data := range *subfuncSDC.Message.ItemScheduleLine {

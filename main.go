@@ -95,11 +95,13 @@ func callProcess(rmq *rabbitmq.RabbitmqClient, caller *dpfm_api_caller.DPFMAPICa
 		output.APIProcessingResult = getBoolPtr(false)
 		output.APIProcessingError = errs[0].Error()
 		output.Message = res
+		output.ConnectionKey = "response"
 		rmq.Send(conf.RMQ.QueueToResponse(), output)
 		return errs[0]
 	}
 	output.APIProcessingResult = getBoolPtr(true)
 	output.Message = res
+	output.ConnectionKey = "response"
 
 	l.JsonParseOut(output)
 	rmq.Send(conf.RMQ.QueueToResponse(), output)
@@ -115,7 +117,7 @@ func getAccepter(input *dpfm_api_input_reader.SDC) []string {
 
 	if accepter[0] == "All" {
 		accepter = []string{
-			"Header", "Item", "ItemPricingElement",
+			"Header", "Item", "ItemPricingElement", "ItemScheduleLine", "Partner", "Address",
 		}
 	}
 	return accepter

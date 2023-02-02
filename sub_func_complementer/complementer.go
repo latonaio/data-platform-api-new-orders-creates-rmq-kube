@@ -73,6 +73,9 @@ func (c *SubFuncComplementer) ComplementItem(input *dpfm_api_input_reader.SDC, s
 
 	subfuncSDC.Message.Item = msg.Item
 	subfuncSDC.Message.ItemPricingElement = msg.ItemPricingElement
+	subfuncSDC.Message.ItemScheduleLine = msg.ItemScheduleLine
+	subfuncSDC.Message.Partner = msg.Partner
+	subfuncSDC.Message.Address = msg.Address
 
 	return err
 }
