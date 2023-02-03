@@ -8,7 +8,7 @@
 	"business_partner": 201,
 	"service_label": "ORDERS",
 	"api_type": "creates",
-	"OrdersInputParameters": {
+	"InputParameters": {
 		"ReferenceDocument": 20000001,
 		"ReferenceDocumentItem": null
 	},
