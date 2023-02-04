@@ -177,7 +177,7 @@ func (c *ExistenceConf) getExConfMapper(serviceLabel string) (*[]ExConfMapper, e
 			&data.ExConfProgramFileName,
 			&data.Tabletag,
 			&data.TableConfirmed,
-			&data.ExConfAPITyp,
+			&data.ExConfAPIType,
 		)
 		if err != nil {
 			return nil, err
