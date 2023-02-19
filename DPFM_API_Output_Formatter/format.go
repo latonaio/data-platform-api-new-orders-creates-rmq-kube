@@ -54,6 +54,8 @@ func ConvertToHeaderCreates(subfuncSDC *sub_func_complementer.SDC) *Header {
 		HeaderBlockStatus:                data.HeaderBlockStatus,
 		HeaderDeliveryBlockStatus:        data.HeaderDeliveryBlockStatus,
 		HeaderBillingBlockStatus:         data.HeaderBillingBlockStatus,
+		IsCancelled:                      data.IsCancelled,
+		IsMarkedForDeletion:              data.IsMarkedForDeletion,
 	}
 
 	return header
@@ -63,29 +65,33 @@ func ConvertToHeaderUpdates(headerUpdates *dpfm_api_processing_formatter.HeaderU
 	data := headerUpdates
 
 	header := &Header{
-		OrderID:                         data.OrderID,
-		BillToParty:                     data.BillToParty,
-		BillFromParty:                   data.BillFromParty,
-		BillToCountry:                   data.BillToCountry,
-		BillFromCountry:                 data.BillFromCountry,
-		Payer:                           data.Payer,
-		Payee:                           data.Payee,
-		TotalNetAmount:                  data.TotalNetAmount,
-		TotalTaxAmount:                  data.TotalTaxAmount,
-		TotalGrossAmount:                data.TotalGrossAmount,
-		TransactionCurrency:             data.TransactionCurrency,
-		PricingDate:                     data.PricingDate,
-		PriceDetnExchangeRate:           data.PriceDetnExchangeRate,
-		RequestedDeliveryDate:           data.RequestedDeliveryDate,
-		HeaderCompleteDeliveryIsDefined: data.HeaderCompleteDeliveryIsDefined,
-		Incoterms:                       data.Incoterms,
-		PaymentTerms:                    data.PaymentTerms,
-		PaymentMethod:                   data.PaymentMethod,
-		InvoiceDocumentDate:             data.InvoiceDocumentDate,
-		HeaderText:                      data.HeaderText,
-		HeaderBlockStatus:               data.HeaderBlockStatus,
-		HeaderDeliveryBlockStatus:       data.HeaderDeliveryBlockStatus,
-		HeaderBillingBlockStatus:        data.HeaderBillingBlockStatus,
+		BillToParty:               data.BillToParty,
+		BillFromParty:             data.BillFromParty,
+		BillToCountry:             data.BillToCountry,
+		BillFromCountry:           data.BillFromCountry,
+		Payer:                     data.Payer,
+		Payee:                     data.Payee,
+		ContractType:              data.ContractType,
+		OrderValidityStartDate:    data.OrderValidityStartDate,
+		OrderValidityEndDate:      data.OrderValidityEndDate,
+		InvoicePeriodStartDate:    data.InvoicePeriodStartDate,
+		InvoicePeriodEndDate:      data.InvoicePeriodEndDate,
+		TotalNetAmount:            data.TotalNetAmount,
+		TotalTaxAmount:            data.TotalTaxAmount,
+		TotalGrossAmount:          data.TotalGrossAmount,
+		TransactionCurrency:       data.TransactionCurrency,
+		PricingDate:               data.PricingDate,
+		PriceDetnExchangeRate:     data.PriceDetnExchangeRate,
+		RequestedDeliveryDate:     data.RequestedDeliveryDate,
+		Incoterms:                 data.Incoterms,
+		PaymentTerms:              data.PaymentTerms,
+		PaymentMethod:             data.PaymentMethod,
+		AccountingExchangeRate:    data.AccountingExchangeRate,
+		InvoiceDocumentDate:       data.InvoiceDocumentDate,
+		HeaderText:                data.HeaderText,
+		HeaderBlockStatus:         data.HeaderBlockStatus,
+		HeaderDeliveryBlockStatus: data.HeaderDeliveryBlockStatus,
+		HeaderBillingBlockStatus:  data.HeaderBillingBlockStatus,
 	}
 
 	return header
@@ -113,12 +119,51 @@ func ConvertToPartnerCreates(subfuncSDC *sub_func_complementer.SDC) *[]Partner {
 	return &partner
 }
 
+func ConvertToPartnerUpdates(partnerUpdates *[]dpfm_api_processing_formatter.PartnerUpdates) *[]Partner {
+	var partner []Partner
+
+	for _, data := range *partnerUpdates {
+		partner = append(partner, Partner{
+			BusinessPartnerFullName: data.BusinessPartnerFullName,
+			BusinessPartnerName:     data.BusinessPartnerName,
+			Organization:            data.Organization,
+			Country:                 data.Country,
+			Language:                data.Language,
+			Currency:                data.Currency,
+			ExternalDocumentID:      data.ExternalDocumentID,
+		})
+	}
+
+	return &partner
+}
+
 func ConvertToAddressCreates(subfuncSDC *sub_func_complementer.SDC) *[]Address {
 	var address []Address
 
 	for _, data := range *subfuncSDC.Message.Address {
 		address = append(address, Address{
 			OrderID:     data.OrderID,
+			AddressID:   data.AddressID,
+			PostalCode:  data.PostalCode,
+			LocalRegion: data.LocalRegion,
+			Country:     data.Country,
+			District:    data.District,
+			StreetName:  data.StreetName,
+			CityName:    data.CityName,
+			Building:    data.Building,
+			Floor:       data.Floor,
+			Room:        data.Room,
+		})
+	}
+
+	return &address
+}
+
+func ConvertToAddressUpdates(addressUpdates *[]dpfm_api_processing_formatter.AddressUpdates) *[]Address {
+	var address []Address
+
+	for _, data := range *addressUpdates {
+		address = append(address, Address{
 			AddressID:   data.AddressID,
 			PostalCode:  data.PostalCode,
 			LocalRegion: data.LocalRegion,
@@ -249,8 +294,8 @@ func ConvertToItemCreates(subfuncSDC *sub_func_complementer.SDC) *[]Item {
 			ItemBlockStatus:                               data.ItemBlockStatus,
 			ItemDeliveryBlockStatus:                       data.ItemDeliveryBlockStatus,
 			ItemBillingBlockStatus:                        data.ItemBillingBlockStatus,
-			ItemIsCancelled:                               data.ItemIsCancelled,
-			ItemIsDeleted:                                 data.ItemIsDeleted,
+			IsCancelled:                                   data.IsCancelled,
+			IsMarkedForDeletion:                           data.IsMarkedForDeletion,
 		})
 	}
 
@@ -262,22 +307,69 @@ func ConvertToItemUpdates(itemUpdates *[]dpfm_api_processing_formatter.ItemUpdat
 
 	for _, data := range *itemUpdates {
 		item = append(item, Item{
-			OrderID:                 data.OrderID,
-			OrderItem:               data.OrderItem,
-			OrderItemText:           data.OrderItemText,
-			OrderItemTextByBuyer:    data.OrderItemTextByBuyer,
-			OrderItemTextBySeller:   data.OrderItemTextBySeller,
-			Product:                 data.Product,
-			ProductStandardID:       data.ProductStandardID,
-			ProductGroup:            data.ProductGroup,
-			RequestedDeliveryDate:   data.RequestedDeliveryDate,
-			DeliverToParty:          data.DeliverToParty,
-			DeliverFromParty:        data.DeliverFromParty,
-			DueCalculationBaseDate:  data.DueCalculationBaseDate,
-			PaymentDueDate:          data.PaymentDueDate,
-			NetPaymentDays:          data.NetPaymentDays,
-			ItemDeliveryBlockStatus: data.ItemDeliveryBlockStatus,
-			ItemBillingBlockStatus:  data.ItemBillingBlockStatus,
+			OrderItem:                                data.OrderItem,
+			OrderItemCategory:                        data.OrderItemCategory,
+			SupplyChainRelationshipID:                data.SupplyChainRelationshipID,
+			SupplyChainRelationshipDeliveryID:        data.SupplyChainRelationshipDeliveryID,
+			SupplyChainRelationshipDeliveryPlantID:   data.SupplyChainRelationshipDeliveryPlantID,
+			SupplyChainRelationshipStockConfPlantID:  data.SupplyChainRelationshipStockConfPlantID,
+			SupplyChainRelationshipProductionPlantID: data.SupplyChainRelationshipProductionPlantID,
+			OrderItemText:                            data.OrderItemText,
+			OrderItemTextByBuyer:                     data.OrderItemTextByBuyer,
+			OrderItemTextBySeller:                    data.OrderItemTextBySeller,
+			Product:                                  data.Product,
+			ProductStandardID:                        data.ProductStandardID,
+			ProductGroup:                             data.ProductGroup,
+			RequestedDeliveryDate:                    data.RequestedDeliveryDate,
+			DeliverToParty:                           data.DeliverToParty,
+			DeliverFromParty:                         data.DeliverFromParty,
+			DeliverToPlant:                           data.DeliverToPlant,
+			DeliverToPlantStorageLocation:            data.DeliverToPlantStorageLocation,
+			DeliverToPlantBatch:                      data.DeliverToPlantBatch,
+			DeliverToPlantBatchValidityStartDate:     data.DeliverToPlantBatchValidityStartDate,
+			DeliverToPlantBatchValidityStartTime:     data.DeliverToPlantBatchValidityStartTime,
+			DeliverToPlantBatchValidityEndDate:       data.DeliverToPlantBatchValidityEndDate,
+			DeliverToPlantBatchValidityEndTime:       data.DeliverToPlantBatchValidityEndTime,
+			DeliverFromPlant:                         data.DeliverFromPlant,
+			DeliverFromPlantStorageLocation:          data.DeliverFromPlantStorageLocation,
+			DeliverFromPlantBatch:                    data.DeliverFromPlantBatch,
+			DeliverFromPlantBatchValidityStartTime:   data.DeliverFromPlantBatchValidityStartTime,
+			DeliveryUnit:                             data.DeliveryUnit,
+			StockConfirmationBusinessPartner:         data.StockConfirmationBusinessPartner,
+			StockConfirmationPlant:                   data.StockConfirmationPlant,
+			StockConfirmationPlantBatch:              data.StockConfirmationPlantBatch,
+			OrderQuantityInBaseUnit:                  data.OrderQuantityInBaseUnit,
+			OrderQuantityInDeliveryUnit:              data.OrderQuantityInDeliveryUnit,
+			StockConfirmationPolicy:                  data.StockConfirmationPolicy,
+			ItemWeightUnit:                           data.ItemWeightUnit,
+			ProductGrossWeight:                       data.ProductGrossWeight,
+			ItemGrossWeight:                          data.ItemGrossWeight,
+			ProductNetWeight:                         data.ProductNetWeight,
+			ItemNetWeight:                            data.ItemNetWeight,
+			TaxAmount:                                data.TaxAmount,
+			GrossAmount:                              data.GrossAmount,
+			InvoiceDocumentDate:                      data.InvoiceDocumentDate,
+			ProductionPlantBusinessPartner:           data.ProductionPlantBusinessPartner,
+			ProductionPlant:                          data.ProductionPlant,
+			ProductionPlantStorageLocation:           data.ProductionPlantStorageLocation,
+			ProductionPlantBatch:                     data.ProductionPlantBatch,
+			ProductionPlantBatchValidityStartDate:    data.ProductionPlantBatchValidityStartDate,
+			ProductionPlantBatchValidityStartTime:    data.ProductionPlantBatchValidityStartTime,
+			ProductionPlantBatchValidityEndDate:      data.ProductionPlantBatchValidityEndDate,
+			ProductionPlantBatchValidityEndTime:      data.ProductionPlantBatchValidityEndTime,
+			Incoterms:                                data.Incoterms,
+			TransactionTaxClassification:             data.TransactionTaxClassification,
+			ProductTaxClassificationBillToCountry:    data.ProductTaxClassificationBillToCountry,
+			ProductTaxClassificationBillFromCountry:  data.ProductTaxClassificationBillFromCountry,
+			DefinedTaxClassification:                 data.DefinedTaxClassification,
+			PaymentTerms:                             data.PaymentTerms,
+			DueCalculationBaseDate:                   data.DueCalculationBaseDate,
+			PaymentDueDate:                           data.PaymentDueDate,
+			NetPaymentDays:                           data.NetPaymentDays,
+			Project:                                  data.Project,
+			ItemBlockStatus:                          data.ItemBlockStatus,
+			ItemDeliveryBlockStatus:                  data.ItemDeliveryBlockStatus,
+			ItemBillingBlockStatus:                   data.ItemBillingBlockStatus,
 		})
 	}
 
@@ -319,9 +411,8 @@ func ConvertToItemPricingElementUpdates(itemPricingElementUpdates *[]dpfm_api_pr
 
 	for _, data := range *itemPricingElementUpdates {
 		itemPricingElement = append(itemPricingElement, ItemPricingElement{
-			ConditionRateValue:         data.ConditionRateValue,
-			ConditionAmount:            data.ConditionAmount,
-			ConditionIsManuallyChanged: data.ConditionIsManuallyChanged,
+			ConditionRateValue: data.ConditionRateValue,
+			ConditionAmount:    data.ConditionAmount,
 		})
 	}
 
@@ -351,10 +442,13 @@ func ConvertToItemScheduleLineCreates(subfuncSDC *sub_func_complementer.SDC) *[]
 			OrderQuantityInBaseUnit:                      data.OrderQuantityInBaseUnit,
 			ConfirmedOrderQuantityByPDTAvailCheck:        data.ConfirmedOrderQuantityByPDTAvailCheck,
 			DeliveredQuantityInBaseUnit:                  data.DeliveredQuantityInBaseUnit,
+			UndeliveredQuantityInBaseUnit:                data.UndeliveredQuantityInBaseUnit,
 			OpenConfirmedQuantityInBaseUnit:              data.OpenConfirmedQuantityInBaseUnit,
 			StockIsFullyConfirmed:                        data.StockIsFullyConfirmed,
 			PlusMinusFlag:                                data.PlusMinusFlag,
 			ItemScheduleLineDeliveryBlockStatus:          data.ItemScheduleLineDeliveryBlockStatus,
+			IsCancelled:                                  data.IsCancelled,
+			IsMarkedForDeletion:                          data.IsMarkedForDeletion,
 		})
 	}
 
@@ -367,27 +461,8 @@ func ConvertToItemScheduleLineUpdates(subfuncSDC *sub_func_complementer.SDC) *[]
 	for _, data := range *subfuncSDC.Message.ItemScheduleLine {
 
 		itemScheduleLine = append(itemScheduleLine, ItemScheduleLine{
-			OrderID:                                      data.OrderID,
-			OrderItem:                                    data.OrderItem,
-			ScheduleLine:                                 data.ScheduleLine,
-			SupplyChainRelationshipID:                    data.SupplyChainRelationshipID,
-			SupplyChainRelationshipStockConfPlantID:      data.SupplyChainRelationshipStockConfPlantID,
-			Product:                                      data.Product,
-			StockConfirmationBussinessPartner:            data.StockConfirmationBussinessPartner,
-			StockConfirmationPlant:                       data.StockConfirmationPlant,
-			StockConfirmationPlantTimeZone:               data.StockConfirmationPlantTimeZone,
-			StockConfirmationPlantBatch:                  data.StockConfirmationPlantBatch,
-			StockConfirmationPlantBatchValidityStartDate: data.StockConfirmationPlantBatchValidityStartDate,
-			StockConfirmationPlantBatchValidityEndDate:   data.StockConfirmationPlantBatchValidityEndDate,
-			RequestedDeliveryDate:                        data.RequestedDeliveryDate,
-			ConfirmedDeliveryDate:                        data.ConfirmedDeliveryDate,
-			OrderQuantityInBaseUnit:                      data.OrderQuantityInBaseUnit,
-			ConfirmedOrderQuantityByPDTAvailCheck:        data.ConfirmedOrderQuantityByPDTAvailCheck,
-			DeliveredQuantityInBaseUnit:                  data.DeliveredQuantityInBaseUnit,
-			OpenConfirmedQuantityInBaseUnit:              data.OpenConfirmedQuantityInBaseUnit,
-			StockIsFullyConfirmed:                        data.StockIsFullyConfirmed,
-			PlusMinusFlag:                                data.PlusMinusFlag,
-			ItemScheduleLineDeliveryBlockStatus:          data.ItemScheduleLineDeliveryBlockStatus,
+			RequestedDeliveryDate:               data.RequestedDeliveryDate,
+			ItemScheduleLineDeliveryBlockStatus: data.ItemScheduleLineDeliveryBlockStatus,
 		})
 	}
 

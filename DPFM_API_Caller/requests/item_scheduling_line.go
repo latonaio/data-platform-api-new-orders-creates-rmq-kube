@@ -18,8 +18,11 @@ type ItemScheduleLine struct {
 	OrderQuantityInBaseUnit                      *float32 `json:"OrderQuantityInBaseUnit"`
 	ConfirmedOrderQuantityByPDTAvailCheck        *float32 `json:"ConfirmedOrderQuantityByPDTAvailCheck"`
 	DeliveredQuantityInBaseUnit                  *float32 `json:"DeliveredQuantityInBaseUnit"`
+	UndeliveredQuantityInBaseUnit                *float32 `json:"UndeliveredQuantityInBaseUnit"`
 	OpenConfirmedQuantityInBaseUnit              *float32 `json:"OpenConfirmedQuantityInBaseUnit"`
 	StockIsFullyConfirmed                        *bool    `json:"StockIsFullyConfirmed"`
 	PlusMinusFlag                                *string  `json:"PlusMinusFlag"`
 	ItemScheduleLineDeliveryBlockStatus          *bool    `json:"ItemScheduleLineDeliveryBlockStatus"`
+	IsCancelled                                  *bool    `json:"IsCancelled"`
+	IsMarkedForDeletion                          *bool    `json:"IsMarkedForDeletion"`
 }

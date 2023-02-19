@@ -71,6 +71,8 @@ func (c *DPFMAPICaller) updateSqlProcess(
 	var header *dpfm_api_output_formatter.Header
 	var item *[]dpfm_api_output_formatter.Item
 	var itemPricingElement *[]dpfm_api_output_formatter.ItemPricingElement
+	var partner *[]dpfm_api_output_formatter.Partner
+	var address *[]dpfm_api_output_formatter.Address
 	for _, fn := range accepter {
 		switch fn {
 		case "Header":
@@ -79,6 +81,10 @@ func (c *DPFMAPICaller) updateSqlProcess(
 			item = c.itemUpdateSql(mtx, input, output, errs, log)
 		case "ItemPricingElement":
 			itemPricingElement = c.itemPricingElementUpdateSql(mtx, input, output, errs, log)
+		case "Partner":
+			partner = c.partnerUpdateSql(mtx, input, output, errs, log)
+		case "Address":
+			address = c.addressUpdateSql(mtx, input, output, errs, log)
 		default:
 
 		}
@@ -88,6 +94,8 @@ func (c *DPFMAPICaller) updateSqlProcess(
 		Header:             header,
 		Item:               item,
 		ItemPricingElement: itemPricingElement,
+		Partner:            partner,
+		Address:            address,
 	}
 
 	return data
@@ -412,6 +420,72 @@ func (c *DPFMAPICaller) itemPricingElementUpdateSql(
 	}
 
 	data := dpfm_api_output_formatter.ConvertToItemPricingElementUpdates(req)
+
+	return data
+}
+
+func (c *DPFMAPICaller) partnerUpdateSql(
+	mtx *sync.Mutex,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) *[]dpfm_api_output_formatter.Partner {
+	var req *[]dpfm_api_processing_formatter.PartnerUpdates
+	for _, v := range input.Header.Partner {
+		*req = append(*req, *dpfm_api_processing_formatter.ConvertToPartnerUpdates(v))
+	}
+
+	res, err := c.rmq.SessionKeepRequest(nil, c.conf.RMQ.QueueToSQL()[0], map[string]interface{}{"message": req, "function": "OrdersPartner", "runtime_session_id": 123})
+	if err != nil {
+		err = xerrors.Errorf("rmq error: %w", err)
+		return nil
+	}
+	res.Success()
+	if !checkResult(res) {
+		// err = xerrors.New("Header Data cannot insert")
+		output.SQLUpdateResult = getBoolPtr(false)
+		output.SQLUpdateError = "Item Data cannot insert"
+		return nil
+	}
+	if output.SQLUpdateResult == nil {
+		output.SQLUpdateResult = getBoolPtr(true)
+	}
+
+	data := dpfm_api_output_formatter.ConvertToPartnerUpdates(req)
+
+	return data
+}
+
+func (c *DPFMAPICaller) addressUpdateSql(
+	mtx *sync.Mutex,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) *[]dpfm_api_output_formatter.Address {
+	var req *[]dpfm_api_processing_formatter.AddressUpdates
+	for _, v := range input.Header.Address {
+		*req = append(*req, *dpfm_api_processing_formatter.ConvertToAddressUpdates(v))
+	}
+
+	res, err := c.rmq.SessionKeepRequest(nil, c.conf.RMQ.QueueToSQL()[0], map[string]interface{}{"message": req, "function": "OrdersAddress", "runtime_session_id": 123})
+	if err != nil {
+		err = xerrors.Errorf("rmq error: %w", err)
+		return nil
+	}
+	res.Success()
+	if !checkResult(res) {
+		// err = xerrors.New("Header Data cannot insert")
+		output.SQLUpdateResult = getBoolPtr(false)
+		output.SQLUpdateError = "Item Data cannot insert"
+		return nil
+	}
+	if output.SQLUpdateResult == nil {
+		output.SQLUpdateResult = getBoolPtr(true)
+	}
+
+	data := dpfm_api_output_formatter.ConvertToAddressUpdates(req)
 
 	return data
 }

@@ -121,8 +121,8 @@ type Header struct {
 	HeaderBlockStatus                *bool       `json:"HeaderBlockStatus"`
 	HeaderDeliveryBlockStatus        *bool       `json:"HeaderDeliveryBlockStatus"`
 	HeaderBillingBlockStatus         *bool       `json:"HeaderBillingBlockStatus"`
-	HeaderIsCancelled                *bool       `json:"HeaderIsCancelled"`
-	HeaderIsDeleted                  *bool       `json:"HeaderIsDeleted"`
+	IsCancelled                      *bool       `json:"IsCancelled"`
+	IsMarkedForDeletion              *bool       `json:"IsMarkedForDeletion"`
 	Item                             []Item      `json:"Item"`
 	HeaderDoc                        []HeaderDoc `json:"HeaderDoc"`
 	Partner                          []Partner   `json:"Partner"`
@@ -278,8 +278,8 @@ type Item struct {
 	ItemBlockStatus                               *bool                `json:"ItemBlockStatus"`
 	ItemDeliveryBlockStatus                       *bool                `json:"ItemDeliveryBlockStatus"`
 	ItemBillingBlockStatus                        *bool                `json:"ItemBillingBlockStatus"`
-	ItemIsCancelled                               *bool                `json:"ItemIsCancelled"`
-	ItemIsDeleted                                 *bool                `json:"ItemIsDeleted"`
+	IsCancelled                                   *bool                `json:"IsCancelled"`
+	IsMarkedForDeletion                           *bool                `json:"IsMarkedForDeletion"`
 	ItemPricingElement                            []ItemPricingElement `json:"ItemPricingElement"`
 	ItemScheduleLine                              []ItemScheduleLine   `json:"ItemScheduleLine"`
 }
@@ -323,8 +323,11 @@ type ItemScheduleLine struct {
 	OrderQuantityInBaseUnit                      *float32 `json:"OrderQuantityInBaseUnit"`
 	ConfirmedOrderQuantityByPDTAvailCheck        *float32 `json:"ConfirmedOrderQuantityByPDTAvailCheck"`
 	DeliveredQuantityInBaseUnit                  *float32 `json:"DeliveredQuantityInBaseUnit"`
+	UndeliveredQuantityInBaseUnit                *float32 `json:"UndeliveredQuantityInBaseUnit"`
 	OpenConfirmedQuantityInBaseUnit              *float32 `json:"OpenConfirmedQuantityInBaseUnit"`
 	StockIsFullyConfirmed                        *bool    `json:"StockIsFullyConfirmed"`
 	PlusMinusFlag                                *string  `json:"PlusMinusFlag"`
 	ItemScheduleLineDeliveryBlockStatus          *bool    `json:"ItemScheduleLineDeliveryBlockStatus"`
+	IsCancelled                                  *bool    `json:"IsCancelled"`
+	IsMarkedForDeletion                          *bool    `json:"IsMarkedForDeletion"`
 }
