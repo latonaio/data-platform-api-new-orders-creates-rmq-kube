@@ -15,11 +15,7 @@ func (c *ExistenceConf) addressExistenceConf(mapper ExConfMapper, input *dpfm_ap
 
 	address := input.Header.Address
 	for _, address := range address {
-		addressID, validityEndDate, err := getAddressExistenceConfKey(mapper, &input.Header, &address, exconfErrMsg)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
+		addressID, validityEndDate := getAddressExistenceConfKey(mapper, &input.Header, &address, exconfErrMsg)
 		queueName, err := getQueueName(mapper)
 		if err != nil {
 			*errs = append(*errs, err)
@@ -28,6 +24,10 @@ func (c *ExistenceConf) addressExistenceConf(mapper ExConfMapper, input *dpfm_ap
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
+			if isZero(addressID) || isZero(validityEndDate) {
+				wg2.Done()
+				return
+			}
 			res, err := c.addressExistenceConfRequest(addressID, validityEndDate, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
@@ -75,24 +75,17 @@ func (c *ExistenceConf) addressExistenceConfRequest(addressID int, validityEndDa
 	return "", nil
 }
 
-func getAddressExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, address *dpfm_api_input_reader.Address, exconfErrMsg *string) (int, string, error) {
+func getAddressExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, address *dpfm_api_input_reader.Address, exconfErrMsg *string) (int, string) {
 	var addressID int
 	var validityEndDate string
-	var err error
-
-	if header.OrderValidityEndDate == nil {
-		err = xerrors.Errorf("cannot specify null keys")
-		return 0, "", err
-	}
-	if header.OrderValidityEndDate != nil {
-		if len(*header.OrderValidityEndDate) == 0 {
-			err = xerrors.Errorf("cannot specify null keys")
-			return 0, "", err
-		}
-	}
 
 	addressID = address.AddressID
-	validityEndDate = *header.OrderValidityEndDate
 
-	return addressID, validityEndDate, nil
+	if header.OrderValidityEndDate == nil {
+		validityEndDate = ""
+	} else {
+		validityEndDate = *header.OrderValidityEndDate
+	}
+
+	return addressID, validityEndDate
 }

@@ -15,11 +15,7 @@ func (c *ExistenceConf) itemProductExistenceConf(mapper ExConfMapper, input *dpf
 
 	items := input.Header.Item
 	for _, item := range items {
-		product, err := getItemProductMasterGeneralExistenceConfKey(mapper, &item, exconfErrMsg)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
+		product := getItemProductMasterGeneralExistenceConfKey(mapper, &item, exconfErrMsg)
 		queueName, err := getQueueName(mapper)
 		if err != nil {
 			*errs = append(*errs, err)
@@ -28,6 +24,10 @@ func (c *ExistenceConf) itemProductExistenceConf(mapper ExConfMapper, input *dpf
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
+			if isZero(product) {
+				wg2.Done()
+				return
+			}
 			res, err := c.productMasterGeneralExistenceConfRequest(product, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
@@ -74,23 +74,16 @@ func (c *ExistenceConf) productMasterGeneralExistenceConfRequest(product string,
 	return "", nil
 }
 
-func getItemProductMasterGeneralExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) (string, error) {
+func getItemProductMasterGeneralExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) string {
 	var product string
-	var err error
 
 	switch mapper.Field {
 	case "Product":
 		if item.Product == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", err
+			product = ""
+		} else {
+			product = *item.Product
 		}
-		if item.Product != nil {
-			if len(*item.Product) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", err
-			}
-		}
-		product = *item.Product
 	}
-	return product, nil
+	return product
 }

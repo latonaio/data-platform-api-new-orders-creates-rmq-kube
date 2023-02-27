@@ -40,6 +40,7 @@ func ConvertToHeaderCreates(subfuncSDC *sub_func_complementer.SDC) *Header {
 		PricingDate:                      data.PricingDate,
 		PriceDetnExchangeRate:            data.PriceDetnExchangeRate,
 		RequestedDeliveryDate:            data.RequestedDeliveryDate,
+		RequestedDeliveryTime:            data.RequestedDeliveryTime,
 		HeaderCompleteDeliveryIsDefined:  data.HeaderCompleteDeliveryIsDefined,
 		Incoterms:                        data.Incoterms,
 		PaymentTerms:                     data.PaymentTerms,
@@ -83,6 +84,7 @@ func ConvertToHeaderUpdates(headerUpdates *dpfm_api_processing_formatter.HeaderU
 		PricingDate:               data.PricingDate,
 		PriceDetnExchangeRate:     data.PriceDetnExchangeRate,
 		RequestedDeliveryDate:     data.RequestedDeliveryDate,
+		RequestedDeliveryTime:     data.RequestedDeliveryTime,
 		Incoterms:                 data.Incoterms,
 		PaymentTerms:              data.PaymentTerms,
 		PaymentMethod:             data.PaymentMethod,
@@ -95,89 +97,6 @@ func ConvertToHeaderUpdates(headerUpdates *dpfm_api_processing_formatter.HeaderU
 	}
 
 	return header
-}
-
-func ConvertToPartnerCreates(subfuncSDC *sub_func_complementer.SDC) *[]Partner {
-	var partner []Partner
-
-	for _, data := range *subfuncSDC.Message.Partner {
-		partner = append(partner, Partner{
-			OrderID:                 data.OrderID,
-			PartnerFunction:         data.PartnerFunction,
-			BusinessPartner:         data.BusinessPartner,
-			BusinessPartnerFullName: data.BusinessPartnerFullName,
-			BusinessPartnerName:     data.BusinessPartnerName,
-			Organization:            data.Organization,
-			Country:                 data.Country,
-			Language:                data.Language,
-			Currency:                data.Currency,
-			ExternalDocumentID:      data.ExternalDocumentID,
-			AddressID:               data.AddressID,
-		})
-	}
-
-	return &partner
-}
-
-func ConvertToPartnerUpdates(partnerUpdates *[]dpfm_api_processing_formatter.PartnerUpdates) *[]Partner {
-	var partner []Partner
-
-	for _, data := range *partnerUpdates {
-		partner = append(partner, Partner{
-			BusinessPartnerFullName: data.BusinessPartnerFullName,
-			BusinessPartnerName:     data.BusinessPartnerName,
-			Organization:            data.Organization,
-			Country:                 data.Country,
-			Language:                data.Language,
-			Currency:                data.Currency,
-			ExternalDocumentID:      data.ExternalDocumentID,
-		})
-	}
-
-	return &partner
-}
-
-func ConvertToAddressCreates(subfuncSDC *sub_func_complementer.SDC) *[]Address {
-	var address []Address
-
-	for _, data := range *subfuncSDC.Message.Address {
-		address = append(address, Address{
-			OrderID:     data.OrderID,
-			AddressID:   data.AddressID,
-			PostalCode:  data.PostalCode,
-			LocalRegion: data.LocalRegion,
-			Country:     data.Country,
-			District:    data.District,
-			StreetName:  data.StreetName,
-			CityName:    data.CityName,
-			Building:    data.Building,
-			Floor:       data.Floor,
-			Room:        data.Room,
-		})
-	}
-
-	return &address
-}
-
-func ConvertToAddressUpdates(addressUpdates *[]dpfm_api_processing_formatter.AddressUpdates) *[]Address {
-	var address []Address
-
-	for _, data := range *addressUpdates {
-		address = append(address, Address{
-			AddressID:   data.AddressID,
-			PostalCode:  data.PostalCode,
-			LocalRegion: data.LocalRegion,
-			Country:     data.Country,
-			District:    data.District,
-			StreetName:  data.StreetName,
-			CityName:    data.CityName,
-			Building:    data.Building,
-			Floor:       data.Floor,
-			Room:        data.Room,
-		})
-	}
-
-	return &address
 }
 
 func ConvertToItemCreates(subfuncSDC *sub_func_complementer.SDC) *[]Item {
@@ -203,10 +122,13 @@ func ConvertToItemCreates(subfuncSDC *sub_func_complementer.SDC) *[]Item {
 			PricingDate:                                   data.PricingDate,
 			PriceDetnExchangeRate:                         data.PriceDetnExchangeRate,
 			RequestedDeliveryDate:                         data.RequestedDeliveryDate,
+			RequestedDeliveryTime:                         data.RequestedDeliveryTime,
 			DeliverToParty:                                data.DeliverToParty,
 			DeliverFromParty:                              data.DeliverFromParty,
 			CreationDate:                                  data.CreationDate,
+			CreationTime:                                  data.CreationTime,
 			LastChangeDate:                                data.LastChangeDate,
+			LastChangeTime:                                data.LastChangeTime,
 			DeliverToPlant:                                data.DeliverToPlant,
 			DeliverToPlantTimeZone:                        data.DeliverToPlantTimeZone,
 			DeliverToPlantStorageLocation:                 data.DeliverToPlantStorageLocation,
@@ -321,6 +243,7 @@ func ConvertToItemUpdates(itemUpdates *[]dpfm_api_processing_formatter.ItemUpdat
 			ProductStandardID:                        data.ProductStandardID,
 			ProductGroup:                             data.ProductGroup,
 			RequestedDeliveryDate:                    data.RequestedDeliveryDate,
+			RequestedDeliveryTime:                    data.RequestedDeliveryTime,
 			DeliverToParty:                           data.DeliverToParty,
 			DeliverFromParty:                         data.DeliverFromParty,
 			DeliverToPlant:                           data.DeliverToPlant,
@@ -380,7 +303,6 @@ func ConvertToItemPricingElementCreates(subfuncSDC *sub_func_complementer.SDC) *
 	var itemPricingElement []ItemPricingElement
 
 	for _, data := range *subfuncSDC.Message.ItemPricingElement {
-
 		itemPricingElement = append(itemPricingElement, ItemPricingElement{
 			OrderID:                    data.OrderID,
 			OrderItem:                  data.OrderItem,
@@ -423,32 +345,34 @@ func ConvertToItemScheduleLineCreates(subfuncSDC *sub_func_complementer.SDC) *[]
 	var itemScheduleLine []ItemScheduleLine
 
 	for _, data := range *subfuncSDC.Message.ItemScheduleLine {
-
 		itemScheduleLine = append(itemScheduleLine, ItemScheduleLine{
-			OrderID:                                      data.OrderID,
-			OrderItem:                                    data.OrderItem,
-			ScheduleLine:                                 data.ScheduleLine,
-			SupplyChainRelationshipID:                    data.SupplyChainRelationshipID,
-			SupplyChainRelationshipStockConfPlantID:      data.SupplyChainRelationshipStockConfPlantID,
-			Product:                                      data.Product,
-			StockConfirmationBussinessPartner:            data.StockConfirmationBussinessPartner,
-			StockConfirmationPlant:                       data.StockConfirmationPlant,
-			StockConfirmationPlantTimeZone:               data.StockConfirmationPlantTimeZone,
-			StockConfirmationPlantBatch:                  data.StockConfirmationPlantBatch,
-			StockConfirmationPlantBatchValidityStartDate: data.StockConfirmationPlantBatchValidityStartDate,
-			StockConfirmationPlantBatchValidityEndDate:   data.StockConfirmationPlantBatchValidityEndDate,
-			RequestedDeliveryDate:                        data.RequestedDeliveryDate,
-			ConfirmedDeliveryDate:                        data.ConfirmedDeliveryDate,
-			OrderQuantityInBaseUnit:                      data.OrderQuantityInBaseUnit,
-			ConfirmedOrderQuantityByPDTAvailCheck:        data.ConfirmedOrderQuantityByPDTAvailCheck,
-			DeliveredQuantityInBaseUnit:                  data.DeliveredQuantityInBaseUnit,
-			UndeliveredQuantityInBaseUnit:                data.UndeliveredQuantityInBaseUnit,
-			OpenConfirmedQuantityInBaseUnit:              data.OpenConfirmedQuantityInBaseUnit,
-			StockIsFullyConfirmed:                        data.StockIsFullyConfirmed,
-			PlusMinusFlag:                                data.PlusMinusFlag,
-			ItemScheduleLineDeliveryBlockStatus:          data.ItemScheduleLineDeliveryBlockStatus,
-			IsCancelled:                                  data.IsCancelled,
-			IsMarkedForDeletion:                          data.IsMarkedForDeletion,
+			OrderID:                                         data.OrderID,
+			OrderItem:                                       data.OrderItem,
+			ScheduleLine:                                    data.ScheduleLine,
+			SupplyChainRelationshipID:                       data.SupplyChainRelationshipID,
+			SupplyChainRelationshipStockConfPlantID:         data.SupplyChainRelationshipStockConfPlantID,
+			Product:                                         data.Product,
+			StockConfirmationBussinessPartner:               data.StockConfirmationBussinessPartner,
+			StockConfirmationPlant:                          data.StockConfirmationPlant,
+			StockConfirmationPlantTimeZone:                  data.StockConfirmationPlantTimeZone,
+			StockConfirmationPlantBatch:                     data.StockConfirmationPlantBatch,
+			StockConfirmationPlantBatchValidityStartDate:    data.StockConfirmationPlantBatchValidityStartDate,
+			StockConfirmationPlantBatchValidityEndDate:      data.StockConfirmationPlantBatchValidityEndDate,
+			RequestedDeliveryDate:                           data.RequestedDeliveryDate,
+			RequestedDeliveryTime:                           data.RequestedDeliveryTime,
+			ConfirmedDeliveryDate:                           data.ConfirmedDeliveryDate,
+			ScheduleLineOrderQuantity:                       data.ScheduleLineOrderQuantity,
+			OriginalOrderQuantityInBaseUnit:                 data.OriginalOrderQuantityInBaseUnit,
+			ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit: data.ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit,
+			ConfirmedOrderQuantityByPDTAvailCheck:           data.ConfirmedOrderQuantityByPDTAvailCheck,
+			DeliveredQuantityInBaseUnit:                     data.DeliveredQuantityInBaseUnit,
+			UndeliveredQuantityInBaseUnit:                   data.UndeliveredQuantityInBaseUnit,
+			OpenConfirmedQuantityInBaseUnit:                 data.OpenConfirmedQuantityInBaseUnit,
+			StockIsFullyConfirmed:                           data.StockIsFullyConfirmed,
+			PlusMinusFlag:                                   data.PlusMinusFlag,
+			ItemScheduleLineDeliveryBlockStatus:             data.ItemScheduleLineDeliveryBlockStatus,
+			IsCancelled:                                     data.IsCancelled,
+			IsMarkedForDeletion:                             data.IsMarkedForDeletion,
 		})
 	}
 
@@ -462,9 +386,94 @@ func ConvertToItemScheduleLineUpdates(subfuncSDC *sub_func_complementer.SDC) *[]
 
 		itemScheduleLine = append(itemScheduleLine, ItemScheduleLine{
 			RequestedDeliveryDate:               data.RequestedDeliveryDate,
+			RequestedDeliveryTime:               data.RequestedDeliveryTime,
+			ScheduleLineOrderQuantity:           data.ScheduleLineOrderQuantity,
 			ItemScheduleLineDeliveryBlockStatus: data.ItemScheduleLineDeliveryBlockStatus,
 		})
 	}
 
 	return &itemScheduleLine
+}
+
+func ConvertToPartnerCreates(subfuncSDC *sub_func_complementer.SDC) *[]Partner {
+	var partner []Partner
+
+	for _, data := range *subfuncSDC.Message.Partner {
+		partner = append(partner, Partner{
+			OrderID:                 data.OrderID,
+			PartnerFunction:         data.PartnerFunction,
+			BusinessPartner:         data.BusinessPartner,
+			BusinessPartnerFullName: data.BusinessPartnerFullName,
+			BusinessPartnerName:     data.BusinessPartnerName,
+			Organization:            data.Organization,
+			Country:                 data.Country,
+			Language:                data.Language,
+			Currency:                data.Currency,
+			ExternalDocumentID:      data.ExternalDocumentID,
+			AddressID:               data.AddressID,
+		})
+	}
+
+	return &partner
+}
+
+func ConvertToPartnerUpdates(partnerUpdates *[]dpfm_api_processing_formatter.PartnerUpdates) *[]Partner {
+	var partner []Partner
+
+	for _, data := range *partnerUpdates {
+		partner = append(partner, Partner{
+			BusinessPartnerFullName: data.BusinessPartnerFullName,
+			BusinessPartnerName:     data.BusinessPartnerName,
+			Organization:            data.Organization,
+			Country:                 data.Country,
+			Language:                data.Language,
+			Currency:                data.Currency,
+			ExternalDocumentID:      data.ExternalDocumentID,
+		})
+	}
+
+	return &partner
+}
+
+func ConvertToAddressCreates(subfuncSDC *sub_func_complementer.SDC) *[]Address {
+	var address []Address
+
+	for _, data := range *subfuncSDC.Message.Address {
+		address = append(address, Address{
+			OrderID:     data.OrderID,
+			AddressID:   data.AddressID,
+			PostalCode:  data.PostalCode,
+			LocalRegion: data.LocalRegion,
+			Country:     data.Country,
+			District:    data.District,
+			StreetName:  data.StreetName,
+			CityName:    data.CityName,
+			Building:    data.Building,
+			Floor:       data.Floor,
+			Room:        data.Room,
+		})
+	}
+
+	return &address
+}
+
+func ConvertToAddressUpdates(addressUpdates *[]dpfm_api_processing_formatter.AddressUpdates) *[]Address {
+	var address []Address
+
+	for _, data := range *addressUpdates {
+		address = append(address, Address{
+			AddressID:   data.AddressID,
+			PostalCode:  data.PostalCode,
+			LocalRegion: data.LocalRegion,
+			Country:     data.Country,
+			District:    data.District,
+			StreetName:  data.StreetName,
+			CityName:    data.CityName,
+			Building:    data.Building,
+			Floor:       data.Floor,
+			Room:        data.Room,
+		})
+	}
+
+	return &address
 }

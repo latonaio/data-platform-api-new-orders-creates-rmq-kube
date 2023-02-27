@@ -15,11 +15,7 @@ func (c *ExistenceConf) itemPlantGeneralExistenceConf(mapper ExConfMapper, input
 
 	items := input.Header.Item
 	for _, item := range items {
-		plant, bpID, err := getItemPlantGeneralExistenceConfKey(mapper, &item, exconfErrMsg)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
+		plant, bpID := getItemPlantGeneralExistenceConfKey(mapper, &item, exconfErrMsg)
 		queueName, err := getQueueName(mapper)
 		if err != nil {
 			*errs = append(*errs, err)
@@ -28,6 +24,10 @@ func (c *ExistenceConf) itemPlantGeneralExistenceConf(mapper ExConfMapper, input
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
+			if isZero(plant) || isZero(bpID) {
+				wg2.Done()
+				return
+			}
 			res, err := c.plantGeneralExistenceConfRequest(plant, bpID, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
@@ -75,39 +75,28 @@ func (c *ExistenceConf) plantGeneralExistenceConfRequest(plant string, bpID int,
 	return "", nil
 }
 
-func getItemPlantGeneralExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) (string, int, error) {
+func getItemPlantGeneralExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) (string, int) {
 	var plant string
 	var bpID int
-	var err error
 
 	switch mapper.Field {
 	case "DeliverToPlant":
 		if item.DeliverToPlant == nil || item.DeliverToParty == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", 0, err
+			plant = ""
+			bpID = 0
+		} else {
+			plant = *item.DeliverToPlant
+			bpID = *item.DeliverToParty
 		}
-		if item.DeliverToPlant != nil {
-			if len(*item.DeliverToPlant) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", 0, err
-			}
-		}
-		plant = *item.DeliverToPlant
-		bpID = *item.DeliverToParty
 	case "DeliverFromPlant":
 		if item.DeliverFromPlant == nil || item.DeliverFromParty == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", 0, err
+			plant = ""
+			bpID = 0
+		} else {
+			plant = *item.DeliverFromPlant
+			bpID = *item.DeliverFromParty
 		}
-		if item.DeliverFromPlant != nil {
-			if len(*item.DeliverFromPlant) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", 0, err
-			}
-		}
-		plant = *item.DeliverFromPlant
-		bpID = *item.DeliverFromParty
 	}
 
-	return plant, bpID, nil
+	return plant, bpID
 }

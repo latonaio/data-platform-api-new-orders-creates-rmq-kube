@@ -16,11 +16,7 @@ func (c *ExistenceConf) headerCountryExistenceConf(mapper ExConfMapper, input *d
 	headers := make([]dpfm_api_input_reader.Header, 0, 1)
 	headers = append(headers, input.Header)
 	for _, header := range headers {
-		country, err := getHeaderCountryExistenceConfKey(mapper, &header, exconfErrMsg)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
+		country := getHeaderCountryExistenceConfKey(mapper, &header, exconfErrMsg)
 		queueName, err := getQueueName(mapper)
 		if err != nil {
 			*errs = append(*errs, err)
@@ -29,6 +25,10 @@ func (c *ExistenceConf) headerCountryExistenceConf(mapper ExConfMapper, input *d
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
+			if isZero(country) {
+				wg2.Done()
+				return
+			}
 			res, err := c.countryExistenceConfRequest(country, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
@@ -74,37 +74,24 @@ func (c *ExistenceConf) countryExistenceConfRequest(country string, queueName st
 	return "", nil
 }
 
-func getHeaderCountryExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) (string, error) {
+func getHeaderCountryExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) string {
 	var country string
-	var err error
 
 	switch mapper.Field {
 	case "BillToCountry":
 		if header.BillToCountry == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", err
+			country = ""
+		} else {
+			country = *header.BillToCountry
 		}
-		if header.BillToCountry != nil {
-			if len(*header.BillToCountry) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", err
-			}
-		}
-		country = *header.BillToCountry
 
 	case "BillFromCountry":
 		if header.BillFromCountry == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", err
+			country = ""
+		} else {
+			country = *header.BillFromCountry
 		}
-		if header.BillFromCountry != nil {
-			if len(*header.BillFromCountry) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", err
-			}
-		}
-		country = *header.BillFromCountry
 	}
 
-	return country, nil
+	return country
 }

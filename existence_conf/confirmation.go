@@ -270,3 +270,8 @@ func contains(slice []string, target string) bool {
 	}
 	return false
 }
+
+func isZero[T comparable](obj T) bool {
+	var zero T
+	return obj == zero
+}

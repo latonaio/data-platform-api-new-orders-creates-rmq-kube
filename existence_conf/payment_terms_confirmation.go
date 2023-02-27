@@ -15,11 +15,7 @@ func (c *ExistenceConf) headerPaymentTermsExistenceConf(mapper ExConfMapper, inp
 	headers := make([]dpfm_api_input_reader.Header, 0, 1)
 	headers = append(headers, input.Header)
 	for _, header := range headers {
-		paymentTerms, err := getHeaderPaymentTermsExistenceConfKey(mapper, &header, exconfErrMsg)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
+		paymentTerms := getHeaderPaymentTermsExistenceConfKey(mapper, &header, exconfErrMsg)
 		queueName, err := getQueueName(mapper)
 		if err != nil {
 			*errs = append(*errs, err)
@@ -28,6 +24,10 @@ func (c *ExistenceConf) headerPaymentTermsExistenceConf(mapper ExConfMapper, inp
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
+			if isZero(paymentTerms) {
+				wg2.Done()
+				return
+			}
 			res, err := c.paymentTermsExistenceConfRequest(paymentTerms, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
@@ -53,11 +53,7 @@ func (c *ExistenceConf) itemPaymentTermsExistenceConf(mapper ExConfMapper, input
 
 	items := input.Header.Item
 	for _, item := range items {
-		paymentTerms, err := getItemPaymentTermsExistenceConfKey(mapper, &item, exconfErrMsg)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
+		paymentTerms := getItemPaymentTermsExistenceConfKey(mapper, &item, exconfErrMsg)
 		queueName, err := getQueueName(mapper)
 		if err != nil {
 			*errs = append(*errs, err)
@@ -66,6 +62,10 @@ func (c *ExistenceConf) itemPaymentTermsExistenceConf(mapper ExConfMapper, input
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
+			if isZero(paymentTerms) {
+				wg2.Done()
+				return
+			}
 			res, err := c.paymentTermsExistenceConfRequest(paymentTerms, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
@@ -111,44 +111,30 @@ func (c *ExistenceConf) paymentTermsExistenceConfRequest(paymentTerms string, qu
 	return "", nil
 }
 
-func getHeaderPaymentTermsExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) (string, error) {
+func getHeaderPaymentTermsExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) string {
 	var paymentTerms string
-	var err error
 
 	switch mapper.Field {
 	case "PaymentTerms":
 		if header.PaymentTerms == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", err
+			paymentTerms = ""
+		} else {
+			paymentTerms = *header.PaymentTerms
 		}
-		if header.PaymentTerms != nil {
-			if len(*header.PaymentTerms) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", err
-			}
-		}
-		paymentTerms = *header.PaymentTerms
 	}
-	return paymentTerms, nil
+	return paymentTerms
 }
 
-func getItemPaymentTermsExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) (string, error) {
+func getItemPaymentTermsExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) string {
 	var paymentTerms string
-	var err error
 
 	switch mapper.Field {
 	case "PaymentTerms":
 		if item.PaymentTerms == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", err
+			paymentTerms = ""
+		} else {
+			paymentTerms = *item.PaymentTerms
 		}
-		if item.PaymentTerms != nil {
-			if len(*item.PaymentTerms) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", err
-			}
-		}
-		paymentTerms = *item.PaymentTerms
 	}
-	return paymentTerms, nil
+	return paymentTerms
 }

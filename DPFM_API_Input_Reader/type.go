@@ -107,6 +107,7 @@ type Header struct {
 	PricingDate                      *string     `json:"PricingDate"`
 	PriceDetnExchangeRate            *float32    `json:"PriceDetnExchangeRate"`
 	RequestedDeliveryDate            *string     `json:"RequestedDeliveryDate"`
+	RequestedDeliveryTime            *string     `json:"RequestedDeliveryTime"`
 	HeaderCompleteDeliveryIsDefined  *bool       `json:"HeaderCompleteDeliveryIsDefined"`
 	Incoterms                        *string     `json:"Incoterms"`
 	PaymentTerms                     *string     `json:"PaymentTerms"`
@@ -129,45 +130,6 @@ type Header struct {
 	Address                          []Address   `json:"Address"`
 }
 
-type Partner struct {
-	OrderID                 int     `json:"OrderID"`
-	PartnerFunction         string  `json:"PartnerFunction"`
-	BusinessPartner         int     `json:"BusinessPartner"`
-	BusinessPartnerFullName *string `json:"BusinessPartnerFullName"`
-	BusinessPartnerName     *string `json:"BusinessPartnerName"`
-	Organization            *string `json:"Organization"`
-	Country                 *string `json:"Country"`
-	Language                *string `json:"Language"`
-	Currency                *string `json:"Currency"`
-	ExternalDocumentID      *string `json:"ExternalDocumentID"`
-	AddressID               *int    `json:"AddressID"`
-}
-
-type Address struct {
-	OrderID     int     `json:"OrderID"`
-	AddressID   int     `json:"AddressID"`
-	PostalCode  *string `json:"PostalCode"`
-	LocalRegion *string `json:"LocalRegion"`
-	Country     *string `json:"Country"`
-	District    *string `json:"District"`
-	StreetName  *string `json:"StreetName"`
-	CityName    *string `json:"CityName"`
-	Building    *string `json:"Building"`
-	Floor       *int    `json:"Floor"`
-	Room        *int    `json:"Room"`
-}
-
-type HeaderDoc struct {
-	OrderID                  int     `json:"OrderID"`
-	DocType                  string  `json:"DocType"`
-	DocVersionID             int     `json:"DocVersionID"`
-	DocID                    string  `json:"DocID"`
-	FileExtension            *string `json:"FileExtension"`
-	FileName                 *string `json:"FileName"`
-	FilePath                 *string `json:"FilePath"`
-	DocIssuerBusinessPartner *int    `json:"DocIssuerBusinessPartner"`
-}
-
 type Item struct {
 	OrderID                                       int                  `json:"OrderID"`
 	OrderItem                                     int                  `json:"OrderItem"`
@@ -187,10 +149,13 @@ type Item struct {
 	PricingDate                                   *string              `json:"PricingDate"`
 	PriceDetnExchangeRate                         *float32             `json:"PriceDetnExchangeRate"`
 	RequestedDeliveryDate                         *string              `json:"RequestedDeliveryDate"`
+	RequestedDeliveryTime                         *string              `json:"RequestedDeliveryTime"`
 	DeliverToParty                                *int                 `json:"DeliverToParty"`
 	DeliverFromParty                              *int                 `json:"DeliverFromParty"`
 	CreationDate                                  *string              `json:"CreationDate"`
+	CreationTime                                  *string              `json:"CreationTime"`
 	LastChangeDate                                *string              `json:"LastChangeDate"`
+	LastChangeTime                                *string              `json:"LastChangeTime"`
 	DeliverToPlant                                *string              `json:"DeliverToPlant"`
 	DeliverToPlantTimeZone                        *string              `json:"DeliverToPlantTimeZone"`
 	DeliverToPlantStorageLocation                 *string              `json:"DeliverToPlantStorageLocation"`
@@ -306,28 +271,70 @@ type ItemPricingElement struct {
 }
 
 type ItemScheduleLine struct {
-	OrderID                                      int      `json:"OrderID"`
-	OrderItem                                    int      `json:"OrderItem"`
-	ScheduleLine                                 int      `json:"ScheduleLine"`
-	SupplyChainRelationshipID                    *int     `json:"SupplyChainRelationshipID"`
-	SupplyChainRelationshipStockConfPlantID      *int     `json:"SupplyChainRelationshipStockConfPlantID"`
-	Product                                      *string  `json:"Product"`
-	StockConfirmationBussinessPartner            *int     `json:"StockConfirmationBussinessPartner"`
-	StockConfirmationPlant                       *string  `json:"StockConfirmationPlant"`
-	StockConfirmationPlantTimeZone               *string  `json:"StockConfirmationPlantTimeZone"`
-	StockConfirmationPlantBatch                  *string  `json:"StockConfirmationPlantBatch"`
-	StockConfirmationPlantBatchValidityStartDate *string  `json:"StockConfirmationPlantBatchValidityStartDate"`
-	StockConfirmationPlantBatchValidityEndDate   *string  `json:"StockConfirmationPlantBatchValidityEndDate"`
-	RequestedDeliveryDate                        *string  `json:"RequestedDeliveryDate"`
-	ConfirmedDeliveryDate                        *string  `json:"ConfirmedDeliveryDate"`
-	OrderQuantityInBaseUnit                      *float32 `json:"OrderQuantityInBaseUnit"`
-	ConfirmedOrderQuantityByPDTAvailCheck        *float32 `json:"ConfirmedOrderQuantityByPDTAvailCheck"`
-	DeliveredQuantityInBaseUnit                  *float32 `json:"DeliveredQuantityInBaseUnit"`
-	UndeliveredQuantityInBaseUnit                *float32 `json:"UndeliveredQuantityInBaseUnit"`
-	OpenConfirmedQuantityInBaseUnit              *float32 `json:"OpenConfirmedQuantityInBaseUnit"`
-	StockIsFullyConfirmed                        *bool    `json:"StockIsFullyConfirmed"`
-	PlusMinusFlag                                *string  `json:"PlusMinusFlag"`
-	ItemScheduleLineDeliveryBlockStatus          *bool    `json:"ItemScheduleLineDeliveryBlockStatus"`
-	IsCancelled                                  *bool    `json:"IsCancelled"`
-	IsMarkedForDeletion                          *bool    `json:"IsMarkedForDeletion"`
+	OrderID                                         int      `json:"OrderID"`
+	OrderItem                                       int      `json:"OrderItem"`
+	ScheduleLine                                    int      `json:"ScheduleLine"`
+	SupplyChainRelationshipID                       *int     `json:"SupplyChainRelationshipID"`
+	SupplyChainRelationshipStockConfPlantID         *int     `json:"SupplyChainRelationshipStockConfPlantID"`
+	Product                                         *string  `json:"Product"`
+	StockConfirmationBussinessPartner               *int     `json:"StockConfirmationBussinessPartner"`
+	StockConfirmationPlant                          *string  `json:"StockConfirmationPlant"`
+	StockConfirmationPlantTimeZone                  *string  `json:"StockConfirmationPlantTimeZone"`
+	StockConfirmationPlantBatch                     *string  `json:"StockConfirmationPlantBatch"`
+	StockConfirmationPlantBatchValidityStartDate    *string  `json:"StockConfirmationPlantBatchValidityStartDate"`
+	StockConfirmationPlantBatchValidityEndDate      *string  `json:"StockConfirmationPlantBatchValidityEndDate"`
+	RequestedDeliveryDate                           *string  `json:"RequestedDeliveryDate"`
+	RequestedDeliveryTime                           *string  `json:"RequestedDeliveryTime"`
+	ConfirmedDeliveryDate                           *string  `json:"ConfirmedDeliveryDate"`
+	ScheduleLineOrderQuantity                       *float32 `json:"ScheduleLineOrderQuantity"`
+	OriginalOrderQuantityInBaseUnit                 *float32 `json:"OriginalOrderQuantityInBaseUnit"`
+	ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit *float32 `json:"ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit"`
+	ConfirmedOrderQuantityByPDTAvailCheck           *float32 `json:"ConfirmedOrderQuantityByPDTAvailCheck"`
+	DeliveredQuantityInBaseUnit                     *float32 `json:"DeliveredQuantityInBaseUnit"`
+	UndeliveredQuantityInBaseUnit                   *float32 `json:"UndeliveredQuantityInBaseUnit"`
+	OpenConfirmedQuantityInBaseUnit                 *float32 `json:"OpenConfirmedQuantityInBaseUnit"`
+	StockIsFullyConfirmed                           *bool    `json:"StockIsFullyConfirmed"`
+	PlusMinusFlag                                   *string  `json:"PlusMinusFlag"`
+	ItemScheduleLineDeliveryBlockStatus             *bool    `json:"ItemScheduleLineDeliveryBlockStatus"`
+	IsCancelled                                     *bool    `json:"IsCancelled"`
+	IsMarkedForDeletion                             *bool    `json:"IsMarkedForDeletion"`
+}
+
+type Partner struct {
+	OrderID                 int     `json:"OrderID"`
+	PartnerFunction         string  `json:"PartnerFunction"`
+	BusinessPartner         int     `json:"BusinessPartner"`
+	BusinessPartnerFullName *string `json:"BusinessPartnerFullName"`
+	BusinessPartnerName     *string `json:"BusinessPartnerName"`
+	Organization            *string `json:"Organization"`
+	Country                 *string `json:"Country"`
+	Language                *string `json:"Language"`
+	Currency                *string `json:"Currency"`
+	ExternalDocumentID      *string `json:"ExternalDocumentID"`
+	AddressID               *int    `json:"AddressID"`
+}
+
+type Address struct {
+	OrderID     int     `json:"OrderID"`
+	AddressID   int     `json:"AddressID"`
+	PostalCode  *string `json:"PostalCode"`
+	LocalRegion *string `json:"LocalRegion"`
+	Country     *string `json:"Country"`
+	District    *string `json:"District"`
+	StreetName  *string `json:"StreetName"`
+	CityName    *string `json:"CityName"`
+	Building    *string `json:"Building"`
+	Floor       *int    `json:"Floor"`
+	Room        *int    `json:"Room"`
+}
+
+type HeaderDoc struct {
+	OrderID                  int     `json:"OrderID"`
+	DocType                  string  `json:"DocType"`
+	DocVersionID             int     `json:"DocVersionID"`
+	DocID                    string  `json:"DocID"`
+	FileExtension            *string `json:"FileExtension"`
+	FileName                 *string `json:"FileName"`
+	FilePath                 *string `json:"FilePath"`
+	DocIssuerBusinessPartner *int    `json:"DocIssuerBusinessPartner"`
 }

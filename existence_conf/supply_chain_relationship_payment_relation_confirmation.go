@@ -15,11 +15,7 @@ func (c *ExistenceConf) supplyChainRelationshipPaymentRelationExistenceConf(mapp
 	headers := make([]dpfm_api_input_reader.Header, 0, 1)
 	headers = append(headers, input.Header)
 	for _, header := range headers {
-		supplyChainRelationshipID, supplyChainRelationshipBillingID, supplyChainRelationshipPaymentID, buyer, seller, billToParty, billFromParty, payer, payee, err := getSupplyChainRelationshipPaymentRelationExistenceConfKey(mapper, &header, exconfErrMsg)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
+		supplyChainRelationshipID, supplyChainRelationshipBillingID, supplyChainRelationshipPaymentID, buyer, seller, billToParty, billFromParty, payer, payee := getSupplyChainRelationshipPaymentRelationExistenceConfKey(mapper, &header, exconfErrMsg)
 		queueName, err := getQueueName(mapper)
 		if err != nil {
 			*errs = append(*errs, err)
@@ -28,6 +24,11 @@ func (c *ExistenceConf) supplyChainRelationshipPaymentRelationExistenceConf(mapp
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
+			if isZero(supplyChainRelationshipID) || isZero(supplyChainRelationshipBillingID) || isZero(supplyChainRelationshipPaymentID) ||
+				isZero(buyer) || isZero(seller) || isZero(billToParty) || isZero(billFromParty) || isZero(payer) || isZero(payee) {
+				wg2.Done()
+				return
+			}
 			res, err := c.supplyChainRelationshipPaymentRelationExistenceConfRequest(supplyChainRelationshipID, supplyChainRelationshipBillingID, supplyChainRelationshipPaymentID, buyer, seller, billToParty, billFromParty, payer, payee, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
@@ -92,9 +93,8 @@ func (c *ExistenceConf) supplyChainRelationshipPaymentRelationExistenceConfReque
 	return "", nil
 }
 
-func getSupplyChainRelationshipPaymentRelationExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) (int, int, int, int, int, int, int, int, int, error) {
+func getSupplyChainRelationshipPaymentRelationExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) (int, int, int, int, int, int, int, int, int) {
 	var supplyChainRelationshipID, supplyChainRelationshipBillingID, supplyChainRelationshipPaymentID, buyer, seller, billToParty, billFromParty, payer, payee int
-	var err error
 
 	if header.SupplyChainRelationshipID == nil ||
 		header.SupplyChainRelationshipBillingID == nil ||
@@ -105,18 +105,26 @@ func getSupplyChainRelationshipPaymentRelationExistenceConfKey(mapper ExConfMapp
 		header.BillFromParty == nil ||
 		header.Payer == nil ||
 		header.Payee == nil {
-		err = xerrors.Errorf("cannot specify null keys")
-		return 0, 0, 0, 0, 0, 0, 0, 0, 0, err
+		supplyChainRelationshipID = 0
+		supplyChainRelationshipBillingID = 0
+		supplyChainRelationshipPaymentID = 0
+		buyer = 0
+		seller = 0
+		billToParty = 0
+		billFromParty = 0
+		payer = 0
+		payee = 0
+	} else {
+		supplyChainRelationshipID = *header.SupplyChainRelationshipID
+		supplyChainRelationshipBillingID = *header.SupplyChainRelationshipBillingID
+		supplyChainRelationshipPaymentID = *header.SupplyChainRelationshipPaymentID
+		buyer = *header.Buyer
+		seller = *header.Seller
+		billToParty = *header.BillToParty
+		billFromParty = *header.BillFromParty
+		payer = *header.Payer
+		payee = *header.Payee
 	}
-	supplyChainRelationshipID = *header.SupplyChainRelationshipID
-	supplyChainRelationshipBillingID = *header.SupplyChainRelationshipBillingID
-	supplyChainRelationshipPaymentID = *header.SupplyChainRelationshipPaymentID
-	buyer = *header.Buyer
-	seller = *header.Seller
-	billToParty = *header.BillToParty
-	billFromParty = *header.BillFromParty
-	payer = *header.Payer
-	payee = *header.Payee
 
-	return supplyChainRelationshipID, supplyChainRelationshipBillingID, supplyChainRelationshipPaymentID, buyer, seller, billToParty, billFromParty, payer, payee, nil
+	return supplyChainRelationshipID, supplyChainRelationshipBillingID, supplyChainRelationshipPaymentID, buyer, seller, billToParty, billFromParty, payer, payee
 }

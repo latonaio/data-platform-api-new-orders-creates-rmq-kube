@@ -44,6 +44,7 @@
 		"PricingDate": null,
 		"PriceDetnExchangeRate": 0.0073,
 		"RequestedDeliveryDate": "2023-02-13",
+		"RequestedDeliveryTime": "10:55:46",
 		"HeaderCompleteDeliveryIsDefined": null,
 		"Incoterms": "CIF",
 		"PaymentTerms": "0001",
@@ -59,7 +60,7 @@
 		"HeaderDeliveryBlockStatus": null,
 		"HeaderBillingBlockStatus": null,
 		"IsCancelled": null,
-		"IsMarkedForDeletion`": null,
+		"IsMarkedForDeletion": null,
 		"HeaderDoc": [
 			{
 				"DocType": "",
@@ -104,10 +105,13 @@
 				"PricingDate": null,
 				"PriceDetnExchangeRate": null,
 				"RequestedDeliveryDate": "2023-02-13",
+				"RequestedDeliveryTime": "10:55:46",
 				"DeliverToParty": 102,
 				"DeliverFromParty": 701,
 				"CreationDate": null,
+				"CreationTime": null,
 				"LastChangeDate": null,
+				"LastChangeTime": null,
 				"DeliverToPlant": "AB02",
 				"DeliverToPlantTimeZone": "",
 				"DeliverToPlantStorageLocation": "",
@@ -196,7 +200,7 @@
 				"ItemDeliveryBlockStatus": null,
 				"ItemBillingBlockStatus": null,
 				"IsCancelled": null,
-				"IsMarkedForDeletion`": null,
+				"IsMarkedForDeletion": null,
 				"ItemPricingElement": [
 					{
 						"SupplyChainRelationshipID": null,
@@ -229,15 +233,20 @@
 						"StockConfirmationPlantBatch": "",
 						"StockConfirmationPlantBatchValidityStartDate": null,
 						"StockConfirmationPlantBatchValidityEndDate": null,
-						"RequestedDeliveryDate": null,
+						"RequestedDeliveryTime": null,
 						"ConfirmedDeliveryDate": null,
-						"OrderQuantityInBaseUnit": null,
+						"ScheduleLineOrderQuantity": 10,
+						"OriginalOrderQuantityInBaseUnit": null,
+						"ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit": null,
 						"ConfirmedOrderQuantityByPDTAvailCheck": null,
 						"DeliveredQuantityInBaseUnit": null,
+						"UndeliveredQuantityInBaseUnit": null,
 						"OpenConfirmedQuantityInBaseUnit": null,
 						"StockIsFullyConfirmed": null,
 						"PlusMinusFlag": "",
-						"ItemScheduleLineDeliveryBlockStatus": null
+						"ItemScheduleLineDeliveryBlockStatus": null,
+						"IsCancelled": null,
+						"IsMarkedForDeletion": null
 					}
 				]
 			},
@@ -259,10 +268,13 @@
 				"PricingDate": null,
 				"PriceDetnExchangeRate": null,
 				"RequestedDeliveryDate": "2023-02-14",
+				"RequestedDeliveryTime": "10:33:21",
 				"DeliverToParty": 102,
 				"DeliverFromParty": 701,
 				"CreationDate": null,
+				"CreationTime": null,
 				"LastChangeDate": null,
+				"LastChangeTime": null,
 				"DeliverToPlant": "AB02",
 				"DeliverToPlantTimeZone": "",
 				"DeliverToPlantStorageLocation": null,
@@ -350,8 +362,8 @@
 				"ItemBlockStatus": null,
 				"ItemDeliveryBlockStatus": null,
 				"ItemBillingBlockStatus": null,
-				"IsCancelled": false,
-				"IsMarkedForDeletion`": false,
+				"IsCancelled": null,
+				"IsMarkedForDeletion": null,
 				"ItemPricingElement": [
 					{
 						"SupplyChainRelationshipID": null,
@@ -385,14 +397,20 @@
 						"StockConfirmationPlantBatchValidityStartDate": null,
 						"StockConfirmationPlantBatchValidityEndDate": null,
 						"RequestedDeliveryDate": null,
+						"RequestedDeliveryTime": null,
 						"ConfirmedDeliveryDate": null,
-						"OrderQuantityInBaseUnit": null,
+						"ScheduleLineOrderQuantity": 10,
+						"OriginalOrderQuantityInBaseUnit": null,
+						"ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit": null,
 						"ConfirmedOrderQuantityByPDTAvailCheck": null,
 						"DeliveredQuantityInBaseUnit": null,
+						"UndeliveredQuantityInBaseUnit": null,
 						"OpenConfirmedQuantityInBaseUnit": null,
 						"StockIsFullyConfirmed": null,
 						"PlusMinusFlag": "",
-						"ItemScheduleLineDeliveryBlockStatus": null
+						"ItemScheduleLineDeliveryBlockStatus": null,
+						"IsCancelled": null,
+						"IsMarkedForDeletion": null
 					}
 				]
 			}

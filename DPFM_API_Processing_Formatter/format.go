@@ -26,6 +26,7 @@ func ConvertToHeaderUpdates(header dpfm_api_input_reader.Header) *HeaderUpdates 
 		PricingDate:               *data.PricingDate,
 		PriceDetnExchangeRate:     data.PriceDetnExchangeRate,
 		RequestedDeliveryDate:     *data.RequestedDeliveryDate,
+		RequestedDeliveryTime:     *data.RequestedDeliveryTime,
 		Incoterms:                 data.Incoterms,
 		PaymentTerms:              *data.PaymentTerms,
 		PaymentMethod:             *data.PaymentMethod,
@@ -73,6 +74,7 @@ func ConvertToItemUpdates(item dpfm_api_input_reader.Item) *ItemUpdates {
 		ProductStandardID:                        *data.ProductStandardID,
 		ProductGroup:                             data.ProductGroup,
 		RequestedDeliveryDate:                    *data.RequestedDeliveryDate,
+		RequestedDeliveryTime:                    *data.RequestedDeliveryTime,
 		DeliverToParty:                           data.DeliverToParty,
 		DeliverFromParty:                         data.DeliverFromParty,
 		DeliverToPlant:                           data.DeliverToPlant,
@@ -138,7 +140,9 @@ func ConvertToItemScheduleLineUpdates(itemScheduleLine dpfm_api_input_reader.Ite
 	data := itemScheduleLine
 
 	return &ItemScheduleLineUpdates{
-		RequestedDeliveryDate:               data.RequestedDeliveryDate,
+		RequestedDeliveryDate:               *data.RequestedDeliveryDate,
+		RequestedDeliveryTime:               *data.RequestedDeliveryTime,
+		ScheduleLineOrderQuantity:           *data.ScheduleLineOrderQuantity,
 		ItemScheduleLineDeliveryBlockStatus: data.ItemScheduleLineDeliveryBlockStatus,
 	}
 }

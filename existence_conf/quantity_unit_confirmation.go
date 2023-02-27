@@ -15,11 +15,7 @@ func (c *ExistenceConf) itemQuantityUnitExistenceConf(mapper ExConfMapper, input
 
 	items := input.Header.Item
 	for _, item := range items {
-		quantityUnit, err := getItemQuantityUnitExistenceConfKey(mapper, &item, exconfErrMsg)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
+		quantityUnit := getItemQuantityUnitExistenceConfKey(mapper, &item, exconfErrMsg)
 		queueName, err := getQueueName(mapper)
 		if err != nil {
 			*errs = append(*errs, err)
@@ -28,6 +24,10 @@ func (c *ExistenceConf) itemQuantityUnitExistenceConf(mapper ExConfMapper, input
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
+			if isZero(quantityUnit) {
+				wg2.Done()
+				return
+			}
 			res, err := c.quantityUnitExistenceConfRequest(quantityUnit, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
@@ -73,50 +73,31 @@ func (c *ExistenceConf) quantityUnitExistenceConfRequest(quantityUnit string, qu
 	return "", nil
 }
 
-func getItemQuantityUnitExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) (string, error) {
+func getItemQuantityUnitExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) string {
 	var quantityUnit string
-	var err error
 
 	switch mapper.Field {
 	case "BaseUnit":
 		if item.BaseUnit == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", err
+			quantityUnit = ""
+		} else {
+			quantityUnit = *item.BaseUnit
 		}
-		if item.BaseUnit != nil {
-			if len(*item.BaseUnit) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", err
-			}
-		}
-		quantityUnit = *item.BaseUnit
 
 	case "DeliveryUnit":
 		if item.DeliveryUnit == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", err
+			quantityUnit = ""
+		} else {
+			quantityUnit = *item.DeliveryUnit
 		}
-		if item.DeliveryUnit != nil {
-			if len(*item.DeliveryUnit) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", err
-			}
-		}
-		quantityUnit = *item.DeliveryUnit
 
 	case "ItemWeightUnit":
 		if item.ItemWeightUnit == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", err
+			quantityUnit = ""
+		} else {
+			quantityUnit = *item.ItemWeightUnit
 		}
-		if item.ItemWeightUnit != nil {
-			if len(*item.ItemWeightUnit) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", err
-			}
-		}
-		quantityUnit = *item.ItemWeightUnit
 	}
 
-	return quantityUnit, nil
+	return quantityUnit
 }

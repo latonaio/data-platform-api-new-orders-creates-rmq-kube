@@ -15,11 +15,7 @@ func (c *ExistenceConf) itemProjectExistenceConf(mapper ExConfMapper, input *dpf
 
 	items := input.Header.Item
 	for _, item := range items {
-		project, err := getItemProjectExistenceConfKey(mapper, &item, exconfErrMsg)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
+		project := getItemProjectExistenceConfKey(mapper, &item, exconfErrMsg)
 		queueName, err := getQueueName(mapper)
 		if err != nil {
 			*errs = append(*errs, err)
@@ -28,6 +24,10 @@ func (c *ExistenceConf) itemProjectExistenceConf(mapper ExConfMapper, input *dpf
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
+			if isZero(project) {
+				wg2.Done()
+				return
+			}
 			res, err := c.projectExistenceConfRequest(project, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
@@ -73,23 +73,15 @@ func (c *ExistenceConf) projectExistenceConfRequest(project string, queueName st
 	return "", nil
 }
 
-func getItemProjectExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) (string, error) {
+func getItemProjectExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) string {
 	var project string
-	var err error
 
 	switch mapper.Field {
 	case "Project":
 		if item.Project == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", err
-		}
-		if item.Project != nil {
-			if len(*item.Project) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", err
-			}
+			project = ""
 		}
 		project = *item.Project
 	}
-	return project, nil
+	return project
 }

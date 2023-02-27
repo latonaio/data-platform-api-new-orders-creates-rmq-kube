@@ -16,11 +16,7 @@ func (c *ExistenceConf) headerCurrencyExistenceConf(mapper ExConfMapper, input *
 	headers := make([]dpfm_api_input_reader.Header, 0, 1)
 	headers = append(headers, input.Header)
 	for _, header := range headers {
-		currency, err := getHeaderCurrencyExistenceConfKey(mapper, &header, exconfErrMsg)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
+		currency := getHeaderCurrencyExistenceConfKey(mapper, &header, exconfErrMsg)
 		queueName, err := getQueueName(mapper)
 		if err != nil {
 			*errs = append(*errs, err)
@@ -29,6 +25,10 @@ func (c *ExistenceConf) headerCurrencyExistenceConf(mapper ExConfMapper, input *
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
+			if isZero(currency) {
+				wg2.Done()
+				return
+			}
 			res, err := c.currencyExistenceConfRequest(currency, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
@@ -74,23 +74,16 @@ func (c *ExistenceConf) currencyExistenceConfRequest(currency string, queueName 
 	return "", nil
 }
 
-func getHeaderCurrencyExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) (string, error) {
+func getHeaderCurrencyExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) string {
 	var currency string
-	var err error
 
 	switch mapper.Field {
 	case "TransactionCurrency":
 		if header.TransactionCurrency == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", err
+			currency = ""
+		} else {
+			currency = *header.TransactionCurrency
 		}
-		if header.TransactionCurrency != nil {
-			if len(*header.TransactionCurrency) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", err
-			}
-		}
-		currency = *header.TransactionCurrency
 	}
-	return currency, nil
+	return currency
 }

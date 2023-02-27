@@ -16,11 +16,7 @@ func (c *ExistenceConf) headerIncotermsExistenceConf(mapper ExConfMapper, input 
 	headers := make([]dpfm_api_input_reader.Header, 0, 1)
 	headers = append(headers, input.Header)
 	for _, header := range headers {
-		incoterms, err := getHeaderIncotermsExistenceConfKey(mapper, &header, exconfErrMsg)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
+		incoterms := getHeaderIncotermsExistenceConfKey(mapper, &header, exconfErrMsg)
 		queueName, err := getQueueName(mapper)
 		if err != nil {
 			*errs = append(*errs, err)
@@ -29,6 +25,10 @@ func (c *ExistenceConf) headerIncotermsExistenceConf(mapper ExConfMapper, input 
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
+			if isZero(incoterms) {
+				wg2.Done()
+				return
+			}
 			res, err := c.incotermsExistenceConfRequest(incoterms, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
@@ -54,11 +54,7 @@ func (c *ExistenceConf) itemIncotermsExistenceConf(mapper ExConfMapper, input *d
 
 	items := input.Header.Item
 	for _, item := range items {
-		incoterms, err := getItemIncotermsExistenceConfKey(mapper, &item, exconfErrMsg)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
+		incoterms := getItemIncotermsExistenceConfKey(mapper, &item, exconfErrMsg)
 		queueName, err := getQueueName(mapper)
 		if err != nil {
 			*errs = append(*errs, err)
@@ -67,6 +63,10 @@ func (c *ExistenceConf) itemIncotermsExistenceConf(mapper ExConfMapper, input *d
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
+			if isZero(incoterms) {
+				wg2.Done()
+				return
+			}
 			res, err := c.incotermsExistenceConfRequest(incoterms, queueName, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
@@ -112,44 +112,30 @@ func (c *ExistenceConf) incotermsExistenceConfRequest(incoterms string, queueNam
 	return "", nil
 }
 
-func getHeaderIncotermsExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) (string, error) {
+func getHeaderIncotermsExistenceConfKey(mapper ExConfMapper, header *dpfm_api_input_reader.Header, exconfErrMsg *string) string {
 	var incoterms string
-	var err error
 
 	switch mapper.Field {
 	case "Incoterms":
 		if header.Incoterms == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", err
+			incoterms = ""
+		} else {
+			incoterms = *header.Incoterms
 		}
-		if header.Incoterms != nil {
-			if len(*header.Incoterms) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", err
-			}
-		}
-		incoterms = *header.Incoterms
 	}
-	return incoterms, nil
+	return incoterms
 }
 
-func getItemIncotermsExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) (string, error) {
+func getItemIncotermsExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) string {
 	var incoterms string
-	var err error
 
 	switch mapper.Field {
 	case "Incoterms":
 		if item.Incoterms == nil {
-			err = xerrors.Errorf("cannot specify null keys")
-			return "", err
+			incoterms = ""
+		} else {
+			incoterms = *item.Incoterms
 		}
-		if item.Incoterms != nil {
-			if len(*item.Incoterms) == 0 {
-				err = xerrors.Errorf("cannot specify null keys")
-				return "", err
-			}
-		}
-		incoterms = *item.Incoterms
 	}
-	return incoterms, nil
+	return incoterms
 }

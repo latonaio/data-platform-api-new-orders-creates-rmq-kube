@@ -19,6 +19,7 @@ type HeaderUpdates struct {
 	PricingDate               string   `json:"PricingDate"`
 	PriceDetnExchangeRate     *float32 `json:"PriceDetnExchangeRate"`
 	RequestedDeliveryDate     string   `json:"RequestedDeliveryDate"`
+	RequestedDeliveryTime     string   `json:"RequestedDeliveryTime"`
 	Incoterms                 *string  `json:"Incoterms"`
 	PaymentTerms              string   `json:"PaymentTerms"`
 	PaymentMethod             string   `json:"PaymentMethod"`
@@ -58,6 +59,7 @@ type ItemUpdates struct {
 	ProductStandardID                        string   `json:"ProductStandardID"`
 	ProductGroup                             *string  `json:"ProductGroup"`
 	RequestedDeliveryDate                    string   `json:"RequestedDeliveryDate"`
+	RequestedDeliveryTime                    string   `json:"RequestedDeliveryTime"`
 	DeliverToParty                           *int     `json:"DeliverToParty"`
 	DeliverFromParty                         *int     `json:"DeliverFromParty"`
 	DeliverToPlant                           *string  `json:"DeliverToPlant"`
@@ -115,7 +117,9 @@ type ItemPricingElementUpdates struct {
 }
 
 type ItemScheduleLineUpdates struct {
-	RequestedDeliveryDate               *string `json:"RequestedDeliveryDate"`
+	RequestedDeliveryDate               string  `json:"RequestedDeliveryDate"`
+	RequestedDeliveryTime               string  `json:"RequestedDeliveryTime"`
+	ScheduleLineOrderQuantity           float32 `json:"ScheduleLineOrderQuantity"`
 	ItemScheduleLineDeliveryBlockStatus *bool   `json:"ItemScheduleLineDeliveryBlockStatus"`
 }
 
