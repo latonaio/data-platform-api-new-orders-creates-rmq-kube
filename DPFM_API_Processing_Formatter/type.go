@@ -96,6 +96,9 @@ type ItemUpdates struct {
 	ProductionPlantBatchValidityStartTime    *string  `json:"ProductionPlantBatchValidityStartTime"`
 	ProductionPlantBatchValidityEndDate      *string  `json:"ProductionPlantBatchValidityEndDate"`
 	ProductionPlantBatchValidityEndTime      *string  `json:"ProductionPlantBatchValidityEndTime"`
+	InspectionPlan                           *int     `json:"InspectionPlan"`
+	InspectionPlant                          *string  `json:"InspectionPlant"`
+	InspectionOrder                          *int     `json:"InspectionOrder"`
 	Incoterms                                *string  `json:"Incoterms"`
 	TransactionTaxClassification             string   `json:"TransactionTaxClassification"`
 	ProductTaxClassificationBillToCountry    string   `json:"ProductTaxClassificationBillToCountry"`

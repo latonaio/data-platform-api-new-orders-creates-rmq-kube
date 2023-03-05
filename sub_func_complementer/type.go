@@ -169,6 +169,9 @@ type Item struct {
 	ProductionPlantBatchValidityStartTime         *string  `json:"ProductionPlantBatchValidityStartTime"`
 	ProductionPlantBatchValidityEndDate           *string  `json:"ProductionPlantBatchValidityEndDate"`
 	ProductionPlantBatchValidityEndTime           *string  `json:"ProductionPlantBatchValidityEndTime"`
+	InspectionPlan                                *int     `json:"InspectionPlan"`
+	InspectionPlant                               *string  `json:"InspectionPlant"`
+	InspectionOrder                               *int     `json:"InspectionOrder"`
 	Incoterms                                     *string  `json:"Incoterms"`
 	TransactionTaxClassification                  string   `json:"TransactionTaxClassification"`
 	ProductTaxClassificationBillToCountry         string   `json:"ProductTaxClassificationBillToCountry"`
@@ -278,4 +281,11 @@ type Address struct {
 	Building    *string `json:"Building"`
 	Floor       *int    `json:"Floor"`
 	Room        *int    `json:"Room"`
+}
+
+type NumberRange struct {
+	NumberRangeID            string `json:"NumberRangeID"`
+	ServiceLabel             string `json:"ServiceLabel"`
+	FieldNameWithNumberRange string `json:"FieldNameWithNumberRange"`
+	LatestNumber             int    `json:"LatestNumber"`
 }
