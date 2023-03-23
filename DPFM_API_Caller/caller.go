@@ -79,7 +79,16 @@ func (c *DPFMAPICaller) AsyncOrderCreates(
 		return nil, nil
 	}
 	wg.Wait()
-	for range accepter {
+	if input.APIType == "creates" {
+		for range accepter {
+			if err := c.finWait(&mtx, subFuncFin, ticker); err != nil || len(errs) != 0 {
+				if err != nil {
+					errs = append(errs, err)
+				}
+				return subfuncSDC.Message, errs
+			}
+		}
+	} else if input.APIType == "updates" {
 		if err := c.finWait(&mtx, subFuncFin, ticker); err != nil || len(errs) != 0 {
 			if err != nil {
 				errs = append(errs, err)

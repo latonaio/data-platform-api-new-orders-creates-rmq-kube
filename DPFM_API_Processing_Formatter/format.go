@@ -8,6 +8,7 @@ func ConvertToHeaderUpdates(header dpfm_api_input_reader.Header) *HeaderUpdates 
 	data := header
 
 	return &HeaderUpdates{
+		OrderID:                   data.OrderID,
 		BillToParty:               data.BillToParty,
 		BillFromParty:             data.BillFromParty,
 		BillToCountry:             data.BillToCountry,
@@ -19,19 +20,19 @@ func ConvertToHeaderUpdates(header dpfm_api_input_reader.Header) *HeaderUpdates 
 		OrderValidityEndDate:      data.OrderValidityEndDate,
 		InvoicePeriodStartDate:    data.InvoicePeriodStartDate,
 		InvoicePeriodEndDate:      data.InvoicePeriodEndDate,
-		TotalNetAmount:            *data.TotalNetAmount,
-		TotalTaxAmount:            *data.TotalTaxAmount,
-		TotalGrossAmount:          *data.TotalGrossAmount,
-		TransactionCurrency:       *data.TransactionCurrency,
-		PricingDate:               *data.PricingDate,
+		TotalNetAmount:            data.TotalNetAmount,
+		TotalTaxAmount:            data.TotalTaxAmount,
+		TotalGrossAmount:          data.TotalGrossAmount,
+		TransactionCurrency:       data.TransactionCurrency,
+		PricingDate:               data.PricingDate,
 		PriceDetnExchangeRate:     data.PriceDetnExchangeRate,
-		RequestedDeliveryDate:     *data.RequestedDeliveryDate,
-		RequestedDeliveryTime:     *data.RequestedDeliveryTime,
+		RequestedDeliveryDate:     data.RequestedDeliveryDate,
+		RequestedDeliveryTime:     data.RequestedDeliveryTime,
 		Incoterms:                 data.Incoterms,
-		PaymentTerms:              *data.PaymentTerms,
-		PaymentMethod:             *data.PaymentMethod,
+		PaymentTerms:              data.PaymentTerms,
+		PaymentMethod:             data.PaymentMethod,
 		AccountingExchangeRate:    data.AccountingExchangeRate,
-		InvoiceDocumentDate:       *data.InvoiceDocumentDate,
+		InvoiceDocumentDate:       data.InvoiceDocumentDate,
 		HeaderText:                data.HeaderText,
 		HeaderBlockStatus:         data.HeaderBlockStatus,
 		HeaderDeliveryBlockStatus: data.HeaderDeliveryBlockStatus,
@@ -39,42 +40,26 @@ func ConvertToHeaderUpdates(header dpfm_api_input_reader.Header) *HeaderUpdates 
 	}
 }
 
-func ConvertToAddressUpdates(address dpfm_api_input_reader.Address) *AddressUpdates {
-	data := address
-
-	return &AddressUpdates{
-		AddressID:   data.AddressID,
-		PostalCode:  data.PostalCode,
-		LocalRegion: data.LocalRegion,
-		Country:     data.Country,
-		District:    data.District,
-		StreetName:  data.StreetName,
-		CityName:    data.CityName,
-		Building:    data.Building,
-		Floor:       data.Floor,
-		Room:        data.Room,
-	}
-}
-
-func ConvertToItemUpdates(item dpfm_api_input_reader.Item) *ItemUpdates {
+func ConvertToItemUpdates(header dpfm_api_input_reader.Header, item dpfm_api_input_reader.Item) *ItemUpdates {
+	dataHeader := header
 	data := item
-
 	return &ItemUpdates{
+		OrderID:                                  dataHeader.OrderID,
 		OrderItem:                                data.OrderItem,
-		OrderItemCategory:                        *data.OrderItemCategory,
-		SupplyChainRelationshipID:                *data.SupplyChainRelationshipID,
+		OrderItemCategory:                        data.OrderItemCategory,
+		SupplyChainRelationshipID:                data.SupplyChainRelationshipID,
 		SupplyChainRelationshipDeliveryID:        data.SupplyChainRelationshipDeliveryID,
 		SupplyChainRelationshipDeliveryPlantID:   data.SupplyChainRelationshipDeliveryPlantID,
 		SupplyChainRelationshipStockConfPlantID:  data.SupplyChainRelationshipStockConfPlantID,
 		SupplyChainRelationshipProductionPlantID: data.SupplyChainRelationshipProductionPlantID,
-		OrderItemText:                            *data.OrderItemText,
-		OrderItemTextByBuyer:                     *data.OrderItemTextByBuyer,
-		OrderItemTextBySeller:                    *data.OrderItemTextBySeller,
-		Product:                                  *data.Product,
-		ProductStandardID:                        *data.ProductStandardID,
+		OrderItemText:                            data.OrderItemText,
+		OrderItemTextByBuyer:                     data.OrderItemTextByBuyer,
+		OrderItemTextBySeller:                    data.OrderItemTextBySeller,
+		Product:                                  data.Product,
+		ProductStandardID:                        data.ProductStandardID,
 		ProductGroup:                             data.ProductGroup,
-		RequestedDeliveryDate:                    *data.RequestedDeliveryDate,
-		RequestedDeliveryTime:                    *data.RequestedDeliveryTime,
+		RequestedDeliveryDate:                    data.RequestedDeliveryDate,
+		RequestedDeliveryTime:                    data.RequestedDeliveryTime,
 		DeliverToParty:                           data.DeliverToParty,
 		DeliverFromParty:                         data.DeliverFromParty,
 		DeliverToPlant:                           data.DeliverToPlant,
@@ -88,12 +73,12 @@ func ConvertToItemUpdates(item dpfm_api_input_reader.Item) *ItemUpdates {
 		DeliverFromPlantStorageLocation:          data.DeliverFromPlantStorageLocation,
 		DeliverFromPlantBatch:                    data.DeliverFromPlantBatch,
 		DeliverFromPlantBatchValidityStartTime:   data.DeliverFromPlantBatchValidityStartTime,
-		DeliveryUnit:                             *data.DeliveryUnit,
+		DeliveryUnit:                             data.DeliveryUnit,
 		StockConfirmationBusinessPartner:         data.StockConfirmationBusinessPartner,
 		StockConfirmationPlant:                   data.StockConfirmationPlant,
 		StockConfirmationPlantBatch:              data.StockConfirmationPlantBatch,
-		OrderQuantityInBaseUnit:                  *data.OrderQuantityInBaseUnit,
-		OrderQuantityInDeliveryUnit:              *data.OrderQuantityInDeliveryUnit,
+		OrderQuantityInBaseUnit:                  data.OrderQuantityInBaseUnit,
+		OrderQuantityInDeliveryUnit:              data.OrderQuantityInDeliveryUnit,
 		StockConfirmationPolicy:                  data.StockConfirmationPolicy,
 		ItemWeightUnit:                           data.ItemWeightUnit,
 		ProductGrossWeight:                       data.ProductGrossWeight,
@@ -115,11 +100,11 @@ func ConvertToItemUpdates(item dpfm_api_input_reader.Item) *ItemUpdates {
 		InspectionPlant:                          data.InspectionPlant,
 		InspectionOrder:                          data.InspectionOrder,
 		Incoterms:                                data.Incoterms,
-		TransactionTaxClassification:             *data.TransactionTaxClassification,
-		ProductTaxClassificationBillToCountry:    *data.ProductTaxClassificationBillToCountry,
-		ProductTaxClassificationBillFromCountry:  *data.ProductTaxClassificationBillFromCountry,
-		DefinedTaxClassification:                 *data.DefinedTaxClassification,
-		PaymentTerms:                             *data.PaymentTerms,
+		TransactionTaxClassification:             data.TransactionTaxClassification,
+		ProductTaxClassificationBillToCountry:    data.ProductTaxClassificationBillToCountry,
+		ProductTaxClassificationBillFromCountry:  data.ProductTaxClassificationBillFromCountry,
+		DefinedTaxClassification:                 data.DefinedTaxClassification,
+		PaymentTerms:                             data.PaymentTerms,
 		DueCalculationBaseDate:                   data.DueCalculationBaseDate,
 		PaymentDueDate:                           data.PaymentDueDate,
 		NetPaymentDays:                           data.NetPaymentDays,
@@ -130,30 +115,47 @@ func ConvertToItemUpdates(item dpfm_api_input_reader.Item) *ItemUpdates {
 	}
 }
 
-func ConvertToItemPricingElementUpdates(itemPricingElement dpfm_api_input_reader.ItemPricingElement) *ItemPricingElementUpdates {
+func ConvertToItemPricingElementUpdates(header dpfm_api_input_reader.Header, item dpfm_api_input_reader.Item, itemPricingElement dpfm_api_input_reader.ItemPricingElement) *ItemPricingElementUpdates {
+	dataHeader := header
+	dataItem := item
 	data := itemPricingElement
 
 	return &ItemPricingElementUpdates{
-		ConditionRateValue: data.ConditionRateValue,
-		ConditionAmount:    data.ConditionAmount,
+		OrderID:                   dataHeader.OrderID,
+		OrderItem:                 dataItem.OrderItem,
+		SupplyChainRelationshipID: data.SupplyChainRelationshipID,
+		Buyer:                     data.Buyer,
+		Seller:                    data.Seller,
+		PricingProcedureCounter:   data.PricingProcedureCounter,
+		ConditionRateValue:        data.ConditionRateValue,
+		ConditionAmount:           data.ConditionAmount,
 	}
 }
 
-func ConvertToItemScheduleLineUpdates(itemScheduleLine dpfm_api_input_reader.ItemScheduleLine) *ItemScheduleLineUpdates {
+func ConvertToItemScheduleLineUpdates(header dpfm_api_input_reader.Header, item dpfm_api_input_reader.Item, itemScheduleLine dpfm_api_input_reader.ItemScheduleLine) *ItemScheduleLineUpdates {
+	dataHeader := header
+	dataItem := item
 	data := itemScheduleLine
 
 	return &ItemScheduleLineUpdates{
-		RequestedDeliveryDate:               *data.RequestedDeliveryDate,
-		RequestedDeliveryTime:               *data.RequestedDeliveryTime,
-		ScheduleLineOrderQuantity:           *data.ScheduleLineOrderQuantity,
+		OrderID:                             dataHeader.OrderID,
+		OrderItem:                           dataItem.OrderItem,
+		ScheduleLine:                        data.ScheduleLine,
+		RequestedDeliveryDate:               data.RequestedDeliveryDate,
+		RequestedDeliveryTime:               data.RequestedDeliveryTime,
+		ScheduleLineOrderQuantity:           data.ScheduleLineOrderQuantity,
 		ItemScheduleLineDeliveryBlockStatus: data.ItemScheduleLineDeliveryBlockStatus,
 	}
 }
 
-func ConvertToPartnerUpdates(partner dpfm_api_input_reader.Partner) *PartnerUpdates {
+func ConvertToPartnerUpdates(header dpfm_api_input_reader.Header, partner dpfm_api_input_reader.Partner) *PartnerUpdates {
+	dataHeader := header
 	data := partner
 
 	return &PartnerUpdates{
+		OrderID:                 dataHeader.OrderID,
+		PartnerFunction:         data.PartnerFunction,
+		BusinessPartner:         data.BusinessPartner,
 		BusinessPartnerFullName: data.BusinessPartnerFullName,
 		BusinessPartnerName:     data.BusinessPartnerName,
 		Organization:            data.Organization,
@@ -161,5 +163,24 @@ func ConvertToPartnerUpdates(partner dpfm_api_input_reader.Partner) *PartnerUpda
 		Language:                data.Language,
 		Currency:                data.Currency,
 		ExternalDocumentID:      data.ExternalDocumentID,
+	}
+}
+
+func ConvertToAddressUpdates(header dpfm_api_input_reader.Header, address dpfm_api_input_reader.Address) *AddressUpdates {
+	dataHeader := header
+	data := address
+
+	return &AddressUpdates{
+		OrderID:     dataHeader.OrderID,
+		AddressID:   data.AddressID,
+		PostalCode:  data.PostalCode,
+		LocalRegion: data.LocalRegion,
+		Country:     data.Country,
+		District:    data.District,
+		StreetName:  data.StreetName,
+		CityName:    data.CityName,
+		Building:    data.Building,
+		Floor:       data.Floor,
+		Room:        data.Room,
 	}
 }
