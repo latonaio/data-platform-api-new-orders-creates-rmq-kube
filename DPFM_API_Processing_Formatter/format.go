@@ -9,10 +9,9 @@ func ConvertToHeaderUpdates(header dpfm_api_input_reader.Header) *HeaderUpdates 
 
 	return &HeaderUpdates{
 		OrderID:                   data.OrderID,
+		OrderDate:                 data.OrderDate,
 		BillToParty:               data.BillToParty,
 		BillFromParty:             data.BillFromParty,
-		BillToCountry:             data.BillToCountry,
-		BillFromCountry:           data.BillFromCountry,
 		Payer:                     data.Payer,
 		Payee:                     data.Payee,
 		ContractType:              data.ContractType,
@@ -56,8 +55,6 @@ func ConvertToItemUpdates(header dpfm_api_input_reader.Header, item dpfm_api_inp
 		OrderItemTextByBuyer:                     data.OrderItemTextByBuyer,
 		OrderItemTextBySeller:                    data.OrderItemTextBySeller,
 		Product:                                  data.Product,
-		ProductStandardID:                        data.ProductStandardID,
-		ProductGroup:                             data.ProductGroup,
 		RequestedDeliveryDate:                    data.RequestedDeliveryDate,
 		RequestedDeliveryTime:                    data.RequestedDeliveryTime,
 		DeliverToParty:                           data.DeliverToParty,
@@ -79,6 +76,7 @@ func ConvertToItemUpdates(header dpfm_api_input_reader.Header, item dpfm_api_inp
 		StockConfirmationPlantBatch:              data.StockConfirmationPlantBatch,
 		OrderQuantityInBaseUnit:                  data.OrderQuantityInBaseUnit,
 		OrderQuantityInDeliveryUnit:              data.OrderQuantityInDeliveryUnit,
+		QuantityPerPackage:                       data.QuantityPerPackage,
 		StockConfirmationPolicy:                  data.StockConfirmationPolicy,
 		ItemWeightUnit:                           data.ItemWeightUnit,
 		ProductGrossWeight:                       data.ProductGrossWeight,

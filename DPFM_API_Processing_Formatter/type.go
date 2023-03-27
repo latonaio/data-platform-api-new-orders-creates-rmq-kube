@@ -2,10 +2,9 @@ package dpfm_api_processing_formatter
 
 type HeaderUpdates struct {
 	OrderID                   int      `json:"OrderID"`
+	OrderDate                 *string  `json:"OrderDate"`
 	BillToParty               *int     `json:"BillToParty"`
 	BillFromParty             *int     `json:"BillFromParty"`
-	BillToCountry             *string  `json:"BillToCountry"`
-	BillFromCountry           *string  `json:"BillFromCountry"`
 	Payer                     *int     `json:"Payer"`
 	Payee                     *int     `json:"Payee"`
 	ContractType              *string  `json:"ContractType"`
@@ -45,8 +44,6 @@ type ItemUpdates struct {
 	OrderItemTextByBuyer                     *string  `json:"OrderItemTextByBuyer"`
 	OrderItemTextBySeller                    *string  `json:"OrderItemTextBySeller"`
 	Product                                  *string  `json:"Product"`
-	ProductStandardID                        *string  `json:"ProductStandardID"`
-	ProductGroup                             *string  `json:"ProductGroup"`
 	RequestedDeliveryDate                    *string  `json:"RequestedDeliveryDate"`
 	RequestedDeliveryTime                    *string  `json:"RequestedDeliveryTime"`
 	DeliverToParty                           *int     `json:"DeliverToParty"`
@@ -68,6 +65,7 @@ type ItemUpdates struct {
 	StockConfirmationPlantBatch              *string  `json:"StockConfirmationPlantBatch"`
 	OrderQuantityInBaseUnit                  *float32 `json:"OrderQuantityInBaseUnit"`
 	OrderQuantityInDeliveryUnit              *float32 `json:"OrderQuantityInDeliveryUnit"`
+	QuantityPerPackage                       *float32 `json:"QuantityPerPackage"`
 	StockConfirmationPolicy                  *string  `json:"StockConfirmationPolicy"`
 	ItemWeightUnit                           *string  `json:"ItemWeightUnit"`
 	ProductGrossWeight                       *float32 `json:"ProductGrossWeight"`
