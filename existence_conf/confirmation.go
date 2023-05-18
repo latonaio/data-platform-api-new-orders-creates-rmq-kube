@@ -208,9 +208,12 @@ func jsonTypeConversion[T any](data interface{}) (T, error) {
 	}
 	return dist, nil
 }
-func confKeyExistence(res map[string]interface{}) bool {
+func confKeyExistence(res map[string]interface{}, tableTag string) bool {
 	if res == nil {
 		return false
+	}
+	if tableTag == "ProductMasterGeneral" {
+		return productMasterConfKeyExistence(res, tableTag)
 	}
 	raw, ok := res["ExistenceConf"]
 	exist := fmt.Sprintf("%v", raw)
@@ -220,13 +223,20 @@ func confKeyExistence(res map[string]interface{}) bool {
 
 	return false
 }
-func (c *ExistenceConf) exconfRequest(req interface{}, queueName string, log *logger.Logger) (bool, error) {
+
+func (c *ExistenceConf) exconfRequest(req interface{}, mapper ExConfMapper, log *logger.Logger) (bool, error) {
+	queueName, err := getQueueName(mapper)
+	if err != nil {
+		return false, err
+	}
+	tableTag := *mapper.Tabletag
+
 	res, err := c.rmq.SessionKeepRequest(nil, queueName, req)
 	if err != nil {
 		return false, xerrors.Errorf("response error: %w", err)
 	}
 	res.Success()
-	exist := confKeyExistence(res.Data())
+	exist := confKeyExistence(res.Data(), tableTag)
 	log.Info(res.Data())
 	return exist, nil
 }

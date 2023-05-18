@@ -8,7 +8,7 @@ type Returns struct {
 	BusinessPartnerID                            *int                                          `json:"business_partner"`
 	Filepath                                     string                                        `json:"filepath"`
 	ServiceLabel                                 string                                        `json:"service_label"`
-	ProductMasterGeneralReturn                   ProductMasterGeneralReturn                    `json:"ProductMasterGeneral"`
+	ProductMasterReturn                          ProductMasterReturn                           `json:"ProductMaster"`
 	BPGeneralReturn                              BPGeneralReturn                               `json:"BusinessPartnerGeneral"`
 	PlantGeneralReturn                           PlantGeneralReturn                            `json:"PlantGeneral"`
 	SupplyChainRelationshipGeneralReturn         *SupplyChainRelationshipGeneralReturn         `json:"SupplyChainRelationshipGeneral,omitempty"`
@@ -29,8 +29,11 @@ type Returns struct {
 	Deleted                                      bool                                          `json:"deleted"`
 }
 
-type ProductMasterGeneralReturn struct {
-	Product string `json:"Product"`
+type ProductMasterReturn struct {
+	General struct {
+		Product       string `json:"Product"`
+		ExistenceConf bool   `json:"ExistenceConf"`
+	} `json:"General"`
 }
 
 type BPGeneralReturn struct {

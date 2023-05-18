@@ -17,11 +17,6 @@ func (c *ExistenceConf) headerCountryExistenceConf(mapper ExConfMapper, input *d
 	headers = append(headers, input.Header)
 	for _, header := range headers {
 		country := getHeaderCountryExistenceConfKey(mapper, &header, exconfErrMsg)
-		queueName, err := getQueueName(mapper)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
@@ -29,7 +24,7 @@ func (c *ExistenceConf) headerCountryExistenceConf(mapper ExConfMapper, input *d
 				wg2.Done()
 				return
 			}
-			res, err := c.countryExistenceConfRequest(country, queueName, input, existenceMap, mtx, log)
+			res, err := c.countryExistenceConfRequest(country, mapper, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
 				*errs = append(*errs, err)
@@ -47,7 +42,7 @@ func (c *ExistenceConf) headerCountryExistenceConf(mapper ExConfMapper, input *d
 	}
 }
 
-func (c *ExistenceConf) countryExistenceConfRequest(country string, queueName string, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
+func (c *ExistenceConf) countryExistenceConfRequest(country string, mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
 	keys := newResult(map[string]interface{}{
 		"Country": country,
 	})
@@ -64,7 +59,7 @@ func (c *ExistenceConf) countryExistenceConfRequest(country string, queueName st
 	}
 	req.CountryReturn.Country = country
 
-	exist, err = c.exconfRequest(req, queueName, log)
+	exist, err = c.exconfRequest(req, mapper, log)
 	if err != nil {
 		return "", err
 	}

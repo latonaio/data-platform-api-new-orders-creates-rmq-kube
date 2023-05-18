@@ -17,11 +17,6 @@ func (c *ExistenceConf) headerIncotermsExistenceConf(mapper ExConfMapper, input 
 	headers = append(headers, input.Header)
 	for _, header := range headers {
 		incoterms := getHeaderIncotermsExistenceConfKey(mapper, &header, exconfErrMsg)
-		queueName, err := getQueueName(mapper)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
@@ -29,7 +24,7 @@ func (c *ExistenceConf) headerIncotermsExistenceConf(mapper ExConfMapper, input 
 				wg2.Done()
 				return
 			}
-			res, err := c.incotermsExistenceConfRequest(incoterms, queueName, input, existenceMap, mtx, log)
+			res, err := c.incotermsExistenceConfRequest(incoterms, mapper, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
 				*errs = append(*errs, err)
@@ -55,11 +50,6 @@ func (c *ExistenceConf) itemIncotermsExistenceConf(mapper ExConfMapper, input *d
 	items := input.Header.Item
 	for _, item := range items {
 		incoterms := getItemIncotermsExistenceConfKey(mapper, &item, exconfErrMsg)
-		queueName, err := getQueueName(mapper)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
@@ -67,7 +57,7 @@ func (c *ExistenceConf) itemIncotermsExistenceConf(mapper ExConfMapper, input *d
 				wg2.Done()
 				return
 			}
-			res, err := c.incotermsExistenceConfRequest(incoterms, queueName, input, existenceMap, mtx, log)
+			res, err := c.incotermsExistenceConfRequest(incoterms, mapper, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
 				*errs = append(*errs, err)
@@ -85,7 +75,7 @@ func (c *ExistenceConf) itemIncotermsExistenceConf(mapper ExConfMapper, input *d
 	}
 }
 
-func (c *ExistenceConf) incotermsExistenceConfRequest(incoterms string, queueName string, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
+func (c *ExistenceConf) incotermsExistenceConfRequest(incoterms string, mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
 	keys := newResult(map[string]interface{}{
 		"Incoterms": incoterms,
 	})
@@ -102,7 +92,7 @@ func (c *ExistenceConf) incotermsExistenceConfRequest(incoterms string, queueNam
 	}
 	req.IncotermsReturn.Incoterms = incoterms
 
-	exist, err = c.exconfRequest(req, queueName, log)
+	exist, err = c.exconfRequest(req, mapper, log)
 	if err != nil {
 		return "", err
 	}

@@ -16,11 +16,6 @@ func (c *ExistenceConf) headerPaymentTermsExistenceConf(mapper ExConfMapper, inp
 	headers = append(headers, input.Header)
 	for _, header := range headers {
 		paymentTerms := getHeaderPaymentTermsExistenceConfKey(mapper, &header, exconfErrMsg)
-		queueName, err := getQueueName(mapper)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
@@ -28,7 +23,7 @@ func (c *ExistenceConf) headerPaymentTermsExistenceConf(mapper ExConfMapper, inp
 				wg2.Done()
 				return
 			}
-			res, err := c.paymentTermsExistenceConfRequest(paymentTerms, queueName, input, existenceMap, mtx, log)
+			res, err := c.paymentTermsExistenceConfRequest(paymentTerms, mapper, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
 				*errs = append(*errs, err)
@@ -54,11 +49,6 @@ func (c *ExistenceConf) itemPaymentTermsExistenceConf(mapper ExConfMapper, input
 	items := input.Header.Item
 	for _, item := range items {
 		paymentTerms := getItemPaymentTermsExistenceConfKey(mapper, &item, exconfErrMsg)
-		queueName, err := getQueueName(mapper)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
@@ -66,7 +56,7 @@ func (c *ExistenceConf) itemPaymentTermsExistenceConf(mapper ExConfMapper, input
 				wg2.Done()
 				return
 			}
-			res, err := c.paymentTermsExistenceConfRequest(paymentTerms, queueName, input, existenceMap, mtx, log)
+			res, err := c.paymentTermsExistenceConfRequest(paymentTerms, mapper, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
 				*errs = append(*errs, err)
@@ -84,7 +74,7 @@ func (c *ExistenceConf) itemPaymentTermsExistenceConf(mapper ExConfMapper, input
 	}
 }
 
-func (c *ExistenceConf) paymentTermsExistenceConfRequest(paymentTerms string, queueName string, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
+func (c *ExistenceConf) paymentTermsExistenceConfRequest(paymentTerms string, mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
 	keys := newResult(map[string]interface{}{
 		"PaymentTerms": paymentTerms,
 	})
@@ -101,7 +91,7 @@ func (c *ExistenceConf) paymentTermsExistenceConfRequest(paymentTerms string, qu
 	}
 	req.PaymentTermsReturn.PaymentTerms = paymentTerms
 
-	exist, err = c.exconfRequest(req, queueName, log)
+	exist, err = c.exconfRequest(req, mapper, log)
 	if err != nil {
 		return "", err
 	}

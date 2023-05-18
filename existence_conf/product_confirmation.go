@@ -16,11 +16,6 @@ func (c *ExistenceConf) itemProductExistenceConf(mapper ExConfMapper, input *dpf
 	items := input.Header.Item
 	for _, item := range items {
 		product := getItemProductMasterGeneralExistenceConfKey(mapper, &item, exconfErrMsg)
-		queueName, err := getQueueName(mapper)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
@@ -28,7 +23,7 @@ func (c *ExistenceConf) itemProductExistenceConf(mapper ExConfMapper, input *dpf
 				wg2.Done()
 				return
 			}
-			res, err := c.productMasterGeneralExistenceConfRequest(product, queueName, input, existenceMap, mtx, log)
+			res, err := c.productMasterGeneralExistenceConfRequest(product, mapper, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
 				*errs = append(*errs, err)
@@ -46,7 +41,7 @@ func (c *ExistenceConf) itemProductExistenceConf(mapper ExConfMapper, input *dpf
 	}
 }
 
-func (c *ExistenceConf) productMasterGeneralExistenceConfRequest(product string, queueName string, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
+func (c *ExistenceConf) productMasterGeneralExistenceConfRequest(product string, mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
 	keys := newResult(map[string]interface{}{
 		"ProductMasterGeneral": product,
 	})
@@ -61,9 +56,10 @@ func (c *ExistenceConf) productMasterGeneralExistenceConfRequest(product string,
 	if err != nil {
 		return "", xerrors.Errorf("request create error: %w", err)
 	}
-	req.ProductMasterGeneralReturn.Product = product
+	req.ProductMasterReturn.General.Product = product
+	req.Accepter = []string{"General"}
 
-	exist, err = c.exconfRequest(req, queueName, log)
+	exist, err = c.exconfRequest(req, mapper, log)
 	if err != nil {
 		return "", err
 	}
@@ -86,4 +82,17 @@ func getItemProductMasterGeneralExistenceConfKey(mapper ExConfMapper, item *dpfm
 		}
 	}
 	return product
+}
+
+func productMasterConfKeyExistence(res map[string]interface{}, tableTag string) bool {
+	req, err := jsonTypeConversion[Returns](res)
+	if err != nil {
+		return false
+	}
+
+	if tableTag == "ProductMasterGeneral" {
+		return req.ProductMasterReturn.General.ExistenceConf
+	}
+
+	return false
 }

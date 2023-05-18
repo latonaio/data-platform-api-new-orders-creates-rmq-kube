@@ -16,11 +16,6 @@ func (c *ExistenceConf) supplyChainRelationshipGeneralExistenceConf(mapper ExCon
 	headers = append(headers, input.Header)
 	for _, header := range headers {
 		supplyChainRelationshipID, buyer, seller := getSupplyChainRelationshipGeneralExistenceConfKey(mapper, &header, exconfErrMsg)
-		queueName, err := getQueueName(mapper)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
@@ -28,7 +23,7 @@ func (c *ExistenceConf) supplyChainRelationshipGeneralExistenceConf(mapper ExCon
 				wg2.Done()
 				return
 			}
-			res, err := c.supplyChainRelationshipGeneralExistenceConfRequest(supplyChainRelationshipID, buyer, seller, queueName, input, existenceMap, mtx, log)
+			res, err := c.supplyChainRelationshipGeneralExistenceConfRequest(supplyChainRelationshipID, buyer, seller, mapper, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
 				*errs = append(*errs, err)
@@ -46,7 +41,7 @@ func (c *ExistenceConf) supplyChainRelationshipGeneralExistenceConf(mapper ExCon
 	}
 }
 
-func (c *ExistenceConf) supplyChainRelationshipGeneralExistenceConfRequest(supplyChainRelationshipID int, buyer int, seller int, queueName string, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
+func (c *ExistenceConf) supplyChainRelationshipGeneralExistenceConfRequest(supplyChainRelationshipID int, buyer int, seller int, mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
 	keys := newResult(map[string]interface{}{
 		"SupplyChainRelationshipID": supplyChainRelationshipID,
 		"Buyer":                     buyer,
@@ -71,7 +66,7 @@ func (c *ExistenceConf) supplyChainRelationshipGeneralExistenceConfRequest(suppl
 	}
 	req.SupplyChainRelationshipGeneralReturn = data
 
-	exist, err = c.exconfRequest(req, queueName, log)
+	exist, err = c.exconfRequest(req, mapper, log)
 	if err != nil {
 		return "", err
 	}

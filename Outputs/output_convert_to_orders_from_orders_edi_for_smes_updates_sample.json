@@ -24,8 +24,8 @@
       "BillFromCountry": null,
       "Payer": null,
       "Payee": null,
-      "CreationDate": "",
-      "LastChangeDate": "",
+      "CreationDate": "2023-03-11",
+      "LastChangeDate": "2023-03-11",
       "ContractType": null,
       "OrderValidityStartDate": null,
       "OrderValidityEndDate": null,
@@ -56,8 +56,8 @@
       "HeaderBlockStatus": false,
       "HeaderDeliveryBlockStatus": false,
       "HeaderBillingBlockStatus": false,
-      "IsCancelled": null,
-      "IsMarkedForDeletion": null
+      "IsCancelled": false,
+      "IsMarkedForDeletion": false
     },
     "Item": [
       {
@@ -120,6 +120,7 @@
         "ServicesRenderingDate": null,
         "OrderQuantityInBaseUnit": 1,
         "OrderQuantityInDeliveryUnit": 1,
+        "QuantityPerPackage": 0,
         "StockConfirmationPolicy": null,
         "StockConfirmationStatus": null,
         "ConfirmedOrderQuantityInBaseUnit": null,

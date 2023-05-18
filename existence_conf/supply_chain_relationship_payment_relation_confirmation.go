@@ -16,11 +16,6 @@ func (c *ExistenceConf) supplyChainRelationshipPaymentRelationExistenceConf(mapp
 	headers = append(headers, input.Header)
 	for _, header := range headers {
 		supplyChainRelationshipID, supplyChainRelationshipBillingID, supplyChainRelationshipPaymentID, buyer, seller, billToParty, billFromParty, payer, payee := getSupplyChainRelationshipPaymentRelationExistenceConfKey(mapper, &header, exconfErrMsg)
-		queueName, err := getQueueName(mapper)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
@@ -29,7 +24,7 @@ func (c *ExistenceConf) supplyChainRelationshipPaymentRelationExistenceConf(mapp
 				wg2.Done()
 				return
 			}
-			res, err := c.supplyChainRelationshipPaymentRelationExistenceConfRequest(supplyChainRelationshipID, supplyChainRelationshipBillingID, supplyChainRelationshipPaymentID, buyer, seller, billToParty, billFromParty, payer, payee, queueName, input, existenceMap, mtx, log)
+			res, err := c.supplyChainRelationshipPaymentRelationExistenceConfRequest(supplyChainRelationshipID, supplyChainRelationshipBillingID, supplyChainRelationshipPaymentID, buyer, seller, billToParty, billFromParty, payer, payee, mapper, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
 				*errs = append(*errs, err)
@@ -47,7 +42,7 @@ func (c *ExistenceConf) supplyChainRelationshipPaymentRelationExistenceConf(mapp
 	}
 }
 
-func (c *ExistenceConf) supplyChainRelationshipPaymentRelationExistenceConfRequest(supplyChainRelationshipID int, supplyChainRelationshipBillingID int, supplyChainRelationshipPaymentID int, buyer int, seller int, billToParty int, billFromParty int, payer int, payee int, queueName string, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
+func (c *ExistenceConf) supplyChainRelationshipPaymentRelationExistenceConfRequest(supplyChainRelationshipID int, supplyChainRelationshipBillingID int, supplyChainRelationshipPaymentID int, buyer int, seller int, billToParty int, billFromParty int, payer int, payee int, mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
 	keys := newResult(map[string]interface{}{
 		"SupplyChainRelationshipID":        supplyChainRelationshipID,
 		"SupplyChainRelationshipBillingID": supplyChainRelationshipBillingID,
@@ -83,7 +78,7 @@ func (c *ExistenceConf) supplyChainRelationshipPaymentRelationExistenceConfReque
 	}
 	req.SupplyChainRelationshipPaymentRelationReturn = data
 
-	exist, err = c.exconfRequest(req, queueName, log)
+	exist, err = c.exconfRequest(req, mapper, log)
 	if err != nil {
 		return "", err
 	}

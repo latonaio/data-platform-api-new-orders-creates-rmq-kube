@@ -16,11 +16,6 @@ func (c *ExistenceConf) addressExistenceConf(mapper ExConfMapper, input *dpfm_ap
 	address := input.Header.Address
 	for _, address := range address {
 		addressID, validityEndDate := getAddressExistenceConfKey(mapper, &input.Header, &address, exconfErrMsg)
-		queueName, err := getQueueName(mapper)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
 		wg2.Add(1)
 		exReqTimes++
 		go func() {
@@ -28,7 +23,7 @@ func (c *ExistenceConf) addressExistenceConf(mapper ExConfMapper, input *dpfm_ap
 				wg2.Done()
 				return
 			}
-			res, err := c.addressExistenceConfRequest(addressID, validityEndDate, queueName, input, existenceMap, mtx, log)
+			res, err := c.addressExistenceConfRequest(addressID, validityEndDate, mapper, input, existenceMap, mtx, log)
 			if err != nil {
 				mtx.Lock()
 				*errs = append(*errs, err)
@@ -46,7 +41,7 @@ func (c *ExistenceConf) addressExistenceConf(mapper ExConfMapper, input *dpfm_ap
 	}
 }
 
-func (c *ExistenceConf) addressExistenceConfRequest(addressID int, validityEndDate string, queueName string, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
+func (c *ExistenceConf) addressExistenceConfRequest(addressID int, validityEndDate string, mapper ExConfMapper, input *dpfm_api_input_reader.SDC, existenceMap *[]bool, mtx *sync.Mutex, log *logger.Logger) (string, error) {
 	keys := newResult(map[string]interface{}{
 		"AddressID":       addressID,
 		"ValidityEndDate": validityEndDate,
@@ -65,7 +60,7 @@ func (c *ExistenceConf) addressExistenceConfRequest(addressID int, validityEndDa
 	req.AddressReturn.AddressID = addressID
 	req.AddressReturn.ValidityEndDate = validityEndDate
 
-	exist, err = c.exconfRequest(req, queueName, log)
+	exist, err = c.exconfRequest(req, mapper, log)
 	if err != nil {
 		return "", err
 	}

@@ -42,7 +42,7 @@
 			"PriceDetnExchangeRate": null,
 			"RequestedDeliveryDate": "",
 			"RequestedDeliveryTime": "",
-			"HeaderCompleteDeliveryIsDefined": null,
+			"HeaderCompleteDeliveryIsDefined": false,
 			"Incoterms": null,
 			"PaymentTerms": "",
 			"PaymentMethod": "",
@@ -51,13 +51,13 @@
 			"AccountAssignmentGroup": "",
 			"AccountingExchangeRate": null,
 			"InvoiceDocumentDate": "",
-			"IsExportImport": null,
+			"IsExportImport": false,
 			"HeaderText": null,
 			"HeaderBlockStatus": false,
 			"HeaderDeliveryBlockStatus": false,
 			"HeaderBillingBlockStatus": false,
-			"IsCancelled": null,
-			"IsMarkedForDeletion": null
+			"IsCancelled": false,
+			"IsMarkedForDeletion": false
 		},
 		"Item": [
 			{
@@ -120,6 +120,7 @@
 				"ServicesRenderingDate": null,
 				"OrderQuantityInBaseUnit": 496,
 				"OrderQuantityInDeliveryUnit": 496,
+				"QuantityPerPackage": 0,
 				"StockConfirmationPolicy": null,
 				"StockConfirmationStatus": null,
 				"ConfirmedOrderQuantityInBaseUnit": null,
