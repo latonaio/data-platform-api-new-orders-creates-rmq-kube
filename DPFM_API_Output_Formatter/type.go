@@ -48,8 +48,6 @@ type Header struct {
 	BillFromCountry                  *string  `json:"BillFromCountry"`
 	Payer                            *int     `json:"Payer"`
 	Payee                            *int     `json:"Payee"`
-	CreationDate                     string   `json:"CreationDate"`
-	LastChangeDate                   string   `json:"LastChangeDate"`
 	ContractType                     *string  `json:"ContractType"`
 	OrderValidityStartDate           *string  `json:"OrderValidityStartDate"`
 	OrderValidityEndDate             *string  `json:"OrderValidityEndDate"`
@@ -80,6 +78,10 @@ type Header struct {
 	HeaderBlockStatus                *bool    `json:"HeaderBlockStatus"`
 	HeaderDeliveryBlockStatus        *bool    `json:"HeaderDeliveryBlockStatus"`
 	HeaderBillingBlockStatus         *bool    `json:"HeaderBillingBlockStatus"`
+	CreationDate                     string   `json:"CreationDate"`
+	CreationTime                     string   `json:"CreationTime"`
+	LastChangeDate                   string   `json:"LastChangeDate"`
+	LastChangeTime                   string   `json:"LastChangeTime"`
 	IsCancelled                      *bool    `json:"IsCancelled"`
 	IsMarkedForDeletion              *bool    `json:"IsMarkedForDeletion"`
 }
@@ -93,24 +95,25 @@ type Item struct {
 	SupplyChainRelationshipDeliveryPlantID        *int     `json:"SupplyChainRelationshipDeliveryPlantID"`
 	SupplyChainRelationshipStockConfPlantID       *int     `json:"SupplyChainRelationshipStockConfPlantID"`
 	SupplyChainRelationshipProductionPlantID      *int     `json:"SupplyChainRelationshipProductionPlantID"`
+	Buyer		                                  int      `json:"Buyer"`
+	Seller		                                  int      `json:"Seller"`
+	DeliverToParty                                *int     `json:"DeliverToParty"`
+	DeliverFromParty                              *int     `json:"DeliverFromParty"`
+	DeliverToPlant                                *string  `json:"DeliverToPlant"`
+	DeliverFromPlant                              *string  `json:"DeliverFromPlant"`
 	OrderItemText                                 string   `json:"OrderItemText"`
 	OrderItemTextByBuyer                          string   `json:"OrderItemTextByBuyer"`
 	OrderItemTextBySeller                         string   `json:"OrderItemTextBySeller"`
 	Product                                       string   `json:"Product"`
-	ProductStandardID                             string   `json:"ProductStandardID"`
+	ProductStandardID                             *string  `json:"ProductStandardID"`
 	ProductGroup                                  *string  `json:"ProductGroup"`
 	BaseUnit                                      string   `json:"BaseUnit"`
+	BillOfMaterial                                *int     `json:"BillOfMaterial"`
+	BillOfMaterialItem                            *int     `json:"BillOfMaterialItem"`
 	PricingDate                                   string   `json:"PricingDate"`
 	PriceDetnExchangeRate                         *float32 `json:"PriceDetnExchangeRate"`
 	RequestedDeliveryDate                         string   `json:"RequestedDeliveryDate"`
 	RequestedDeliveryTime                         string   `json:"RequestedDeliveryTime"`
-	DeliverToParty                                *int     `json:"DeliverToParty"`
-	DeliverFromParty                              *int     `json:"DeliverFromParty"`
-	CreationDate                                  string   `json:"CreationDate"`
-	CreationTime                                  string   `json:"CreationTime"`
-	LastChangeDate                                string   `json:"LastChangeDate"`
-	LastChangeTime                                string   `json:"LastChangeTime"`
-	DeliverToPlant                                *string  `json:"DeliverToPlant"`
 	DeliverToPlantTimeZone                        *string  `json:"DeliverToPlantTimeZone"`
 	DeliverToPlantStorageLocation                 *string  `json:"DeliverToPlantStorageLocation"`
 	ProductIsBatchManagedInDeliverToPlant         *bool    `json:"ProductIsBatchManagedInDeliverToPlant"`
@@ -120,7 +123,6 @@ type Item struct {
 	DeliverToPlantBatchValidityStartTime          *string  `json:"DeliverToPlantBatchValidityStartTime"`
 	DeliverToPlantBatchValidityEndDate            *string  `json:"DeliverToPlantBatchValidityEndDate"`
 	DeliverToPlantBatchValidityEndTime            *string  `json:"DeliverToPlantBatchValidityEndTime"`
-	DeliverFromPlant                              *string  `json:"DeliverFromPlant"`
 	DeliverFromPlantTimeZone                      *string  `json:"DeliverFromPlantTimeZone"`
 	DeliverFromPlantStorageLocation               *string  `json:"DeliverFromPlantStorageLocation"`
 	ProductIsBatchManagedInDeliverFromPlant       *bool    `json:"ProductIsBatchManagedInDeliverFromPlant"`
@@ -148,16 +150,16 @@ type Item struct {
 	StockConfirmationPolicy                       *string  `json:"StockConfirmationPolicy"`
 	StockConfirmationStatus                       *string  `json:"StockConfirmationStatus"`
 	ConfirmedOrderQuantityInBaseUnit              *float32 `json:"ConfirmedOrderQuantityInBaseUnit"`
-	ItemWeightUnit                                *string  `json:"ItemWeightUnit"`
-	ProductGrossWeight                            *float32 `json:"ProductGrossWeight"`
-	ItemGrossWeight                               *float32 `json:"ItemGrossWeight"`
+	ProductWeightUnit                             *string  `json:"ProductWeightUnit"`
 	ProductNetWeight                              *float32 `json:"ProductNetWeight"`
 	ItemNetWeight                                 *float32 `json:"ItemNetWeight"`
+	ProductGrossWeight                            *float32 `json:"ProductGrossWeight"`
+	ItemGrossWeight                               *float32 `json:"ItemGrossWeight"`
 	InternalCapacityQuantity                      *float32 `json:"InternalCapacityQuantity"`
 	InternalCapacityQuantityUnit                  *string  `json:"InternalCapacityQuantityUnit"`
-	NetAmount                                     *float32 `json:"NetAmount"`
-	TaxAmount                                     *float32 `json:"TaxAmount"`
-	GrossAmount                                   *float32 `json:"GrossAmount"`
+	NetAmount                                     float32  `json:"NetAmount"`
+	TaxAmount                                     float32  `json:"TaxAmount"`
+	GrossAmount                                   float32  `json:"GrossAmount"`
 	InvoiceDocumentDate                           *string  `json:"InvoiceDocumentDate"`
 	ProductionPlantBusinessPartner                *int     `json:"ProductionPlantBusinessPartner"`
 	ProductionPlant                               *string  `json:"ProductionPlant"`
@@ -185,7 +187,8 @@ type Item struct {
 	PaymentDueDate                                *string  `json:"PaymentDueDate"`
 	NetPaymentDays                                *int     `json:"NetPaymentDays"`
 	PaymentMethod                                 string   `json:"PaymentMethod"`
-	Project                                       *string  `json:"Project"`
+	Project                                       *int     `json:"Project"`
+	WBSElement                                    *int     `json:"WBSElement"`
 	AccountingExchangeRate                        *float32 `json:"AccountingExchangeRate"`
 	ReferenceDocument                             *int     `json:"ReferenceDocument"`
 	ReferenceDocumentItem                         *int     `json:"ReferenceDocumentItem"`
@@ -198,9 +201,16 @@ type Item struct {
 	TaxRate                                       *float32 `json:"TaxRate"`
 	CountryOfOrigin                               *string  `json:"CountryOfOrigin"`
 	CountryOfOriginLanguage                       *string  `json:"CountryOfOriginLanguage"`
+	Equipment				                      *int	   `json:"Equipment"`
+	PlannedFreight				                  *int	   `json:"PlannedFreight"`
+	FreightOrder				                  *int	   `json:"FreightOrder"`
 	ItemBlockStatus                               *bool    `json:"ItemBlockStatus"`
 	ItemDeliveryBlockStatus                       *bool    `json:"ItemDeliveryBlockStatus"`
 	ItemBillingBlockStatus                        *bool    `json:"ItemBillingBlockStatus"`
+	CreationDate                                  string   `json:"CreationDate"`
+	CreationTime                                  string   `json:"CreationTime"`
+	LastChangeDate                                string   `json:"LastChangeDate"`
+	LastChangeTime                                string   `json:"LastChangeTime"`
 	IsCancelled                                   *bool    `json:"IsCancelled"`
 	IsMarkedForDeletion                           *bool    `json:"IsMarkedForDeletion"`
 }
@@ -208,22 +218,29 @@ type Item struct {
 type ItemPricingElement struct {
 	OrderID                    int      `json:"OrderID"`
 	OrderItem                  int      `json:"OrderItem"`
-	SupplyChainRelationshipID  int      `json:"SupplyChainRelationshipID"`
-	Buyer                      int      `json:"Buyer"`
-	Seller                     int      `json:"Seller"`
 	PricingProcedureCounter    int      `json:"PricingProcedureCounter"`
+	SupplyChainRelationshipID  *int     `json:"SupplyChainRelationshipID"`
+	Buyer                      *int     `json:"Buyer"`
+	Seller                     *int     `json:"Seller"`
 	ConditionRecord            *int     `json:"ConditionRecord"`
 	ConditionSequentialNumber  *int     `json:"ConditionSequentialNumber"`
 	ConditionType              *string  `json:"ConditionType"`
 	PricingDate                *string  `json:"PricingDate"`
 	ConditionRateValue         *float32 `json:"ConditionRateValue"`
+	ConditionRateValueUnit     *int     `json:"ConditionRateValueUnit"`
+	ConditionScaleQuantity     *int     `json:"ConditionScaleQuantity"`
 	ConditionCurrency          *string  `json:"ConditionCurrency"`
 	ConditionQuantity          *float32 `json:"ConditionQuantity"`
-	ConditionQuantityUnit      *string  `json:"ConditionQuantityUnit"`
 	TaxCode                    *string  `json:"TaxCode"`
 	ConditionAmount            *float32 `json:"ConditionAmount"`
 	TransactionCurrency        *string  `json:"TransactionCurrency"`
 	ConditionIsManuallyChanged *bool    `json:"ConditionIsManuallyChanged"`
+	CreationDate               *string  `json:"CreationDate"`
+	CreationTime               *string  `json:"CreationTime"`
+	LastChangeDate             *string  `json:"LastChangeDate"`
+	LastChangeTime             *string  `json:"LastChangeTime"`
+	IsCancelled                *bool    `json:"IsCancelled"`
+	IsMarkedForDeletion        *bool    `json:"IsMarkedForDeletion"`
 }
 
 type ItemScheduleLine struct {
@@ -241,17 +258,21 @@ type ItemScheduleLine struct {
 	StockConfirmationPlantBatchValidityEndDate      *string  `json:"StockConfirmationPlantBatchValidityEndDate"`
 	RequestedDeliveryDate                           string   `json:"RequestedDeliveryDate"`
 	RequestedDeliveryTime                           string   `json:"RequestedDeliveryTime"`
-	ConfirmedDeliveryDate                           string   `json:"ConfirmedDeliveryDate"`
-	ScheduleLineOrderQuantity                       float32  `json:"ScheduleLineOrderQuantity"`
+	ConfirmedDeliveryDate                           *string  `json:"ConfirmedDeliveryDate"`
+	ConfirmedDeliveryTime                           *string  `json:"ConfirmedDeliveryDate"`
+	ScheduleLineOrderQuantityInBaseUnit             float32  `json:"ScheduleLineOrderQuantityInBaseUnit"`
 	OriginalOrderQuantityInBaseUnit                 float32  `json:"OriginalOrderQuantityInBaseUnit"`
-	ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit float32  `json:"ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit"`
-	ConfirmedOrderQuantityByPDTAvailCheck           float32  `json:"ConfirmedOrderQuantityByPDTAvailCheck"`
+	ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit *float32 `json:"ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit"`
 	DeliveredQuantityInBaseUnit                     *float32 `json:"DeliveredQuantityInBaseUnit"`
 	UndeliveredQuantityInBaseUnit                   *float32 `json:"UndeliveredQuantityInBaseUnit"`
 	OpenConfirmedQuantityInBaseUnit                 *float32 `json:"OpenConfirmedQuantityInBaseUnit"`
 	StockIsFullyConfirmed                           *bool    `json:"StockIsFullyConfirmed"`
-	PlusMinusFlag                                   string   `json:"PlusMinusFlag"`
+	PlusMinusFlag                                   *string  `json:"PlusMinusFlag"`
 	ItemScheduleLineDeliveryBlockStatus             *bool    `json:"ItemScheduleLineDeliveryBlockStatus"`
+	CreationDate               						string   `json:"CreationDate"`
+	CreationTime               						string   `json:"CreationTime"`
+	LastChangeDate             						string   `json:"LastChangeDate"`
+	LastChangeTime             						string   `json:"LastChangeTime"`
 	IsCancelled                                     *bool    `json:"IsCancelled"`
 	IsMarkedForDeletion                             *bool    `json:"IsMarkedForDeletion"`
 }
@@ -282,4 +303,15 @@ type Address struct {
 	Building    *string `json:"Building"`
 	Floor       *int    `json:"Floor"`
 	Room        *int    `json:"Room"`
+}
+
+type HeaderDoc struct {
+	OrderID                  int     `json:"OrderID"`
+	DocType                  string  `json:"DocType"`
+	DocVersionID             int     `json:"DocVersionID"`
+	DocID                    string  `json:"DocID"`
+	FileExtension            *string `json:"FileExtension"`
+	FileName                 *string `json:"FileName"`
+	FilePath                 *string `json:"FilePath"`
+	DocIssuerBusinessPartner *int    `json:"DocIssuerBusinessPartner"`
 }

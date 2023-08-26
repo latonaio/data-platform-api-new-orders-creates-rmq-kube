@@ -1,7 +1,9 @@
 # data-platform-api-orders-creates-rmq-kube
 
-data-platform-api-orders-creates-rmq-kube は、周辺業務システム　を データ連携基盤 と統合することを目的に、API でオーダーデータを登録するマイクロサービスです。  
-https://xxx.xxx.io/api/API_ORDERS_SRV/creates/
+data-platform-api-orders-creates-rmq-kube は、周辺業務システム　を データ連携基盤 と統合することを目的に、API でオーダーデータを登録/更新するマイクロサービスです。
+
+* https://xxx.xxx.io/api/API_ORDERS_SRV/creates/
+* https://xxx.xxx.io/api/API_ORDERS_SRV/updates/
 
 ## 動作環境
 
@@ -13,14 +15,15 @@ data-platform-api-orders-creates-rmq-kube の動作環境は、次の通りで�
 ## 本レポジトリ が 対応する API サービス
 data-platform-api-orders-creates-rmq-kube が対応する APIサービス は、次のものです。
 
-APIサービス URL: https://xxx.xxx.io/api/API_ORDERS_SRV/creates/
+* APIサービス URL: https://xxx.xxx.io/api/API_ORDERS_SRV/creates/
+* APIサービス URL: https://xxx.xxx.io/api/API_ORDERS_SRV/updates/
 
 ## 本レポジトリ に 含まれる API名
 data-platform-api-orders-creates-rmq-kube には、次の API をコールするためのリソースが含まれています。  
 
 * A_Header（オーダー - ヘッダデータ）
 * A_Item（オーダー - 明細データ）
-* A_ItemPricingElement（オーダー - 明細取引先プラントデータ）
+* A_ItemPricingElement（オーダー - 明細価格決定要素データ）
 * A_ItemScheduleLine（オーダー - 明細納入日程行データ）
 * A_Partner（オーダー - 取引先データ）
 * A_Address（オーダー - 住所データ）
@@ -30,8 +33,8 @@ data-platform-api-orders-creates-rmq-kube において、API への値入力条�
 
 ## データ連携基盤のAPIの選択的コール
 
-Latona および AION の データ連携基盤 関連リソースでは、Inputs フォルダ下の sample.json の accepter に取得したいデータの種別（＝APIの種別）を入力し、指定することができます。  
-なお、同 accepter にAll(もしくは空白)の値を入力することで、全データ（＝全APIの種別）をまとめて取得することができます。  
+Latona および AION の データ連携基盤 関連リソースでは、Inputs フォルダ下の sample.json の accepter に登録/更新したいデータの種別（＝APIの種別）を入力し、指定することができます。  
+なお、同 accepter にAll(もしくは空白)の値を入力することで、全データ（＝全APIの種別）をまとめて登録/更新することができます。  
 
 * sample.jsonの記載例(1)  
 
@@ -41,8 +44,6 @@ accepter において 下記の例のように、データの種別（＝APIの�
 ```
 	"api_schema": "DPFMOrdersCreates",
 	"accepter": ["Header"],
-	"order_id": null,
-	"deleted": false
 ```
   
 * 全データを取得する際のsample.jsonの記載例(2)  
@@ -52,8 +53,6 @@ accepter において 下記の例のように、データの種別（＝APIの�
 ```
 	"api_schema": "DPFMOrdersCreates",
 	"accepter": ["All"],
-	"order_id": null,
-	"deleted": false
 ```
 
 ## 指定されたデータ種別のコール
@@ -62,7 +61,7 @@ accepter における データ種別 の指定に基づいて DPFM_API_Caller �
 caller.go の func() 毎 の 以下の箇所が、指定された API をコールするソースコードです。  
 
 ```
-func (c *DPFMAPICaller) AsyncOrderCreates(
+func (c *DPFMAPICaller) AsyncCreates(
 	accepter []string,
 	input *dpfm_api_input_reader.SDC,
 	output *sub_func_complementer.SDC,
@@ -107,7 +106,7 @@ func (c *DPFMAPICaller) AsyncOrderCreates(
 
 ## Output  
 本マイクロサービスでは、[golang-logging-library-for-data-platform](https://github.com/latonaio/golang-logging-library-for-data-platform) により、以下のようなデータがJSON形式で出力されます。  
-以下の sample.json の例は オーダー の ヘッダデータ が取得された結果の JSON の例です。  
+以下の sample.json の例は オーダー の ヘッダデータ が登録/更新された結果の JSON の例です。  
 以下の項目のうち、"OrderID" ～ "PlusMinusFlag" は、/DPFM_API_Output_Formatter/type.go 内 の Type Header {} による出力結果です。"cursor" ～ "time"は、golang-logging-library による 定型フォーマットの出力結果です。  
 
 ```
