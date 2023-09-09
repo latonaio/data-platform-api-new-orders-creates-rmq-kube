@@ -151,29 +151,13 @@ func (c *DPFMAPICaller) subfuncProcess(
 		case "Item":
 			c.itemCreate(mtx, wg, subFuncFin, input, output, subfuncSDC, errs, log)
 		case "ItemPricingElement":
-			if contains(accepter, "Item") {
-				subFuncFin <- nil
-			} else {
-				c.itemCreate(mtx, wg, subFuncFin, input, output, subfuncSDC, errs, log)
-			}
+			c.itemPricingElementCreate(mtx, wg, subFuncFin, input, output, subfuncSDC, errs, log)
 		case "ItemScheduleLine":
-			if contains(accepter, "Item") {
-				subFuncFin <- nil
-			} else {
-				c.itemCreate(mtx, wg, subFuncFin, input, output, subfuncSDC, errs, log)
-			}
+			c.itemScheduleLineCreate(mtx, wg, subFuncFin, input, output, subfuncSDC, errs, log)
 		case "Partner":
-			if contains(accepter, "Item") {
-				subFuncFin <- nil
-			} else {
-				c.itemCreate(mtx, wg, subFuncFin, input, output, subfuncSDC, errs, log)
-			}
+			c.partnerCreate(mtx, wg, subFuncFin, input, output, subfuncSDC, errs, log)
 		case "Address":
-			if contains(accepter, "Item") {
-				subFuncFin <- nil
-			} else {
-				c.itemCreate(mtx, wg, subFuncFin, input, output, subfuncSDC, errs, log)
-			}
+			c.addressCreate(mtx, wg, subFuncFin, input, output, subfuncSDC, errs, log)
 		default:
 			wg.Done()
 		}
@@ -245,6 +229,138 @@ func (c *DPFMAPICaller) itemCreate(
 	}()
 	defer wg.Done()
 	err = c.complementer.ComplementItem(input, subfuncSDC, log)
+	if err != nil {
+		mtx.Lock()
+		*errs = append(*errs, err)
+		mtx.Unlock()
+		return
+	}
+	output.SubfuncResult = getBoolPtr(true)
+	if subfuncSDC.SubfuncResult == nil || !*subfuncSDC.SubfuncResult {
+		output.SubfuncResult = getBoolPtr(false)
+		output.SubfuncError = subfuncSDC.SubfuncError
+		err = xerrors.New(output.SubfuncError)
+		return
+	}
+
+	return
+}
+
+func (c *DPFMAPICaller) itemPricingElementCreate(
+	mtx *sync.Mutex,
+	wg *sync.WaitGroup,
+	errFin chan error,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	subfuncSDC *sub_func_complementer.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) {
+	var err error = nil
+	defer func() {
+		errFin <- err
+	}()
+	defer wg.Done()
+	err = c.complementer.ComplementItemPricingElement(input, subfuncSDC, log)
+	if err != nil {
+		mtx.Lock()
+		*errs = append(*errs, err)
+		mtx.Unlock()
+		return
+	}
+	output.SubfuncResult = getBoolPtr(true)
+	if subfuncSDC.SubfuncResult == nil || !*subfuncSDC.SubfuncResult {
+		output.SubfuncResult = getBoolPtr(false)
+		output.SubfuncError = subfuncSDC.SubfuncError
+		err = xerrors.New(output.SubfuncError)
+		return
+	}
+
+	return
+}
+
+func (c *DPFMAPICaller) itemScheduleLineCreate(
+	mtx *sync.Mutex,
+	wg *sync.WaitGroup,
+	errFin chan error,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	subfuncSDC *sub_func_complementer.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) {
+	var err error = nil
+	defer func() {
+		errFin <- err
+	}()
+	defer wg.Done()
+	err = c.complementer.ComplementItemScheduleLine(input, subfuncSDC, log)
+	if err != nil {
+		mtx.Lock()
+		*errs = append(*errs, err)
+		mtx.Unlock()
+		return
+	}
+	output.SubfuncResult = getBoolPtr(true)
+	if subfuncSDC.SubfuncResult == nil || !*subfuncSDC.SubfuncResult {
+		output.SubfuncResult = getBoolPtr(false)
+		output.SubfuncError = subfuncSDC.SubfuncError
+		err = xerrors.New(output.SubfuncError)
+		return
+	}
+
+	return
+}
+
+func (c *DPFMAPICaller) partnerCreate(
+	mtx *sync.Mutex,
+	wg *sync.WaitGroup,
+	errFin chan error,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	subfuncSDC *sub_func_complementer.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) {
+	var err error = nil
+	defer func() {
+		errFin <- err
+	}()
+	defer wg.Done()
+	err = c.complementer.ComplementPartner(input, subfuncSDC, log)
+	if err != nil {
+		mtx.Lock()
+		*errs = append(*errs, err)
+		mtx.Unlock()
+		return
+	}
+	output.SubfuncResult = getBoolPtr(true)
+	if subfuncSDC.SubfuncResult == nil || !*subfuncSDC.SubfuncResult {
+		output.SubfuncResult = getBoolPtr(false)
+		output.SubfuncError = subfuncSDC.SubfuncError
+		err = xerrors.New(output.SubfuncError)
+		return
+	}
+
+	return
+}
+
+func (c *DPFMAPICaller) addressCreate(
+	mtx *sync.Mutex,
+	wg *sync.WaitGroup,
+	errFin chan error,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	subfuncSDC *sub_func_complementer.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) {
+	var err error = nil
+	defer func() {
+		errFin <- err
+	}()
+	defer wg.Done()
+	err = c.complementer.ComplementAddress(input, subfuncSDC, log)
 	if err != nil {
 		mtx.Lock()
 		*errs = append(*errs, err)
