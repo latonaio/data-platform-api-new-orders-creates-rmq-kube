@@ -30,6 +30,7 @@ type HeaderUpdates struct {
 	HeaderBlockStatus                *bool    `json:"HeaderBlockStatus"`
 	HeaderDeliveryBlockStatus        *bool    `json:"HeaderDeliveryBlockStatus"`
 	HeaderBillingBlockStatus         *bool    `json:"HeaderBillingBlockStatus"`
+	ExternalReferenceDocument        *string  `json:"ExternalReferenceDocument"`
 }
 
 type ItemUpdates struct {
@@ -95,6 +96,8 @@ type ItemUpdates struct {
 	ItemBlockStatus                               *bool    `json:"ItemBlockStatus"`
 	ItemDeliveryBlockStatus                       *bool    `json:"ItemDeliveryBlockStatus"`
 	ItemBillingBlockStatus                        *bool    `json:"ItemBillingBlockStatus"`
+	ExternalReferenceDocument        			  *string  `json:"ExternalReferenceDocument"`
+	ExternalReferenceDocumentItem      			  *string  `json:"ExternalReferenceDocumentItem"`
 }
 
 type ItemPricingElementUpdates struct {

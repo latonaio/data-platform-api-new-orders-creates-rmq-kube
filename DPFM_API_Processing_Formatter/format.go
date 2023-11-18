@@ -37,6 +37,7 @@ func ConvertToHeaderUpdates(header dpfm_api_input_reader.Header) *HeaderUpdates 
 		HeaderBlockStatus:         			data.HeaderBlockStatus,
 		HeaderDeliveryBlockStatus: 			data.HeaderDeliveryBlockStatus,
 		HeaderBillingBlockStatus:  			data.HeaderBillingBlockStatus,
+		ExternalReferenceDocument:		  	data.ExternalReferenceDocument,
 	}
 }
 
@@ -106,6 +107,8 @@ func ConvertToItemUpdates(header dpfm_api_input_reader.Header, item dpfm_api_inp
 		ItemBlockStatus:                          data.ItemBlockStatus,
 		ItemDeliveryBlockStatus:                  data.ItemDeliveryBlockStatus,
 		ItemBillingBlockStatus:                   data.ItemBillingBlockStatus,
+		ExternalReferenceDocument:				  data.ExternalReferenceDocument,
+		ExternalReferenceDocumentItem:	  		  data.ExternalReferenceDocumentItem,
 	}
 }
 
