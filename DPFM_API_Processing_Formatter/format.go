@@ -10,6 +10,7 @@ func ConvertToHeaderUpdates(header dpfm_api_input_reader.Header) *HeaderUpdates 
 	return &HeaderUpdates{
 		OrderID:                  			data.OrderID,
 		OrderDate:                 			data.OrderDate,
+		OrderStatus:              			data.OrderStatus,
 		SupplyChainRelationshipBillingID:   data.SupplyChainRelationshipBillingID,
 		SupplyChainRelationshipPaymentID:   data.SupplyChainRelationshipPaymentID,
 		BillToParty:               			data.BillToParty,
@@ -47,6 +48,7 @@ func ConvertToItemUpdates(header dpfm_api_input_reader.Header, item dpfm_api_inp
 	return &ItemUpdates{
 		OrderID:                                  dataHeader.OrderID,
 		OrderItem:                                data.OrderItem,
+		OrderStatus:              				  data.OrderStatus,
 		SupplyChainRelationshipDeliveryID:        data.SupplyChainRelationshipDeliveryID,
 		SupplyChainRelationshipDeliveryPlantID:   data.SupplyChainRelationshipDeliveryPlantID,
 		SupplyChainRelationshipStockConfPlantID:  data.SupplyChainRelationshipStockConfPlantID,

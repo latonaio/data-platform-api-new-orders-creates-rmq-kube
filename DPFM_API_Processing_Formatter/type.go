@@ -3,6 +3,7 @@ package dpfm_api_processing_formatter
 type HeaderUpdates struct {
 	OrderID                          int      `json:"OrderID"`
 	OrderDate                        string   `json:"OrderDate"`
+	OrderStatus                      string   `json:"OrderStatus"`
 	SupplyChainRelationshipBillingID *int     `json:"SupplyChainRelationshipBillingID"`
 	SupplyChainRelationshipPaymentID *int     `json:"SupplyChainRelationshipPaymentID"`
 	BillToParty                      *int     `json:"BillToParty"`
@@ -36,6 +37,7 @@ type HeaderUpdates struct {
 type ItemUpdates struct {
 	OrderID                                       int      `json:"OrderID"`
 	OrderItem                                     int      `json:"OrderItem"`
+	OrderStatus                      			  string   `json:"OrderStatus"`
 	SupplyChainRelationshipDeliveryID             *int     `json:"SupplyChainRelationshipDeliveryID"`
 	SupplyChainRelationshipDeliveryPlantID        *int     `json:"SupplyChainRelationshipDeliveryPlantID"`
 	SupplyChainRelationshipStockConfPlantID       *int     `json:"SupplyChainRelationshipStockConfPlantID"`
