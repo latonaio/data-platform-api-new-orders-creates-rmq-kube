@@ -45,57 +45,57 @@ func (c *DPFMAPICaller) AsyncCreates(
 	output *dpfm_api_output_formatter.SDC,
 	log *logger.Logger,
 ) (interface{}, []error) {
-	wg := sync.WaitGroup{}
+	//wg := sync.WaitGroup{}
 	mtx := sync.Mutex{}
 	errs := make([]error, 0, 5)
-	exconfAllExist := false
+	//exconfAllExist := false
 
-	exconfFin := make(chan error)
-	subFuncFin := make(chan error)
+	//exconfFin := make(chan error)
+	//subFuncFin := make(chan error)
 
 	subfuncSDC := &sub_func_complementer.SDC{}
 
 	// 他PODへ問い合わせ
-	wg.Add(1)
-	go c.exconfProcess(&mtx, &wg, exconfFin, input, output, &exconfAllExist, accepter, &errs, log)
-	if input.APIType == "creates" {
-		go c.subfuncProcess(&mtx, &wg, subFuncFin, input, output, subfuncSDC, accepter, &errs, log)
-	} else if input.APIType == "updates" {
-		go func() { subFuncFin <- nil }()
-	} else {
-		go func() { subFuncFin <- nil }()
-	}
+	//wg.Add(1)
+	//go c.exconfProcess(&mtx, &wg, exconfFin, input, output, &exconfAllExist, accepter, &errs, log)
+	//if input.APIType == "creates" {
+	//	go c.subfuncProcess(&mtx, &wg, subFuncFin, input, output, subfuncSDC, accepter, &errs, log)
+	//} else if input.APIType == "updates" {
+	//	go func() { subFuncFin <- nil }()
+	//} else {
+	//	go func() { subFuncFin <- nil }()
+	//}
 
 	// 処理待ち
-	ticker := time.NewTicker(10 * time.Second)
-	if err := c.finWait(&mtx, exconfFin, ticker); err != nil || len(errs) != 0 {
-		if err != nil {
-			errs = append(errs, err)
-		}
-		return nil, errs
-	}
-	if !exconfAllExist {
-		mtx.Lock()
-		return nil, nil
-	}
-	wg.Wait()
-	if input.APIType == "creates" {
-		for range accepter {
-			if err := c.finWait(&mtx, subFuncFin, ticker); err != nil || len(errs) != 0 {
-				if err != nil {
-					errs = append(errs, err)
-				}
-				return subfuncSDC.Message, errs
-			}
-		}
-	} else if input.APIType == "updates" {
-		if err := c.finWait(&mtx, subFuncFin, ticker); err != nil || len(errs) != 0 {
-			if err != nil {
-				errs = append(errs, err)
-			}
-			return subfuncSDC.Message, errs
-		}
-	}
+	//ticker := time.NewTicker(10 * time.Second)
+	//if err := c.finWait(&mtx, exconfFin, ticker); err != nil || len(errs) != 0 {
+	//	if err != nil {
+	//		errs = append(errs, err)
+	//	}
+	//	return nil, errs
+	//}
+	//if !exconfAllExist {
+	//	mtx.Lock()
+	//	return nil, nil
+	//}
+	//wg.Wait()
+	//if input.APIType == "creates" {
+	//	for range accepter {
+	//		if err := c.finWait(&mtx, subFuncFin, ticker); err != nil || len(errs) != 0 {
+	//			if err != nil {
+	//				errs = append(errs, err)
+	//			}
+	//			return subfuncSDC.Message, errs
+	//		}
+	//	}
+	//} else if input.APIType == "updates" {
+	//	if err := c.finWait(&mtx, subFuncFin, ticker); err != nil || len(errs) != 0 {
+	//		if err != nil {
+	//			errs = append(errs, err)
+	//		}
+	//		return subfuncSDC.Message, errs
+	//	}
+	//}
 
 	var response interface{}
 	// SQL処理
@@ -261,7 +261,7 @@ func (c *DPFMAPICaller) itemPricingElementCreate(
 		errFin <- err
 	}()
 	defer wg.Done()
-	err = c.complementer.ComplementItemPricingElement(input, subfuncSDC, log)
+	//err = c.complementer.ComplementItemPricingElement(input, subfuncSDC, log)
 	if err != nil {
 		mtx.Lock()
 		*errs = append(*errs, err)
@@ -294,7 +294,7 @@ func (c *DPFMAPICaller) itemScheduleLineCreate(
 		errFin <- err
 	}()
 	defer wg.Done()
-	err = c.complementer.ComplementItemScheduleLine(input, subfuncSDC, log)
+	//err = c.complementer.ComplementItemScheduleLine(input, subfuncSDC, log)
 	if err != nil {
 		mtx.Lock()
 		*errs = append(*errs, err)
@@ -327,7 +327,7 @@ func (c *DPFMAPICaller) partnerCreate(
 		errFin <- err
 	}()
 	defer wg.Done()
-	err = c.complementer.ComplementPartner(input, subfuncSDC, log)
+	//err = c.complementer.ComplementPartner(input, subfuncSDC, log)
 	if err != nil {
 		mtx.Lock()
 		*errs = append(*errs, err)
@@ -360,7 +360,7 @@ func (c *DPFMAPICaller) addressCreate(
 		errFin <- err
 	}()
 	defer wg.Done()
-	err = c.complementer.ComplementAddress(input, subfuncSDC, log)
+	//err = c.complementer.ComplementAddress(input, subfuncSDC, log)
 	if err != nil {
 		mtx.Lock()
 		*errs = append(*errs, err)

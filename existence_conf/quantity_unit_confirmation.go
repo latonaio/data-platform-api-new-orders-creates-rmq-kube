@@ -87,11 +87,11 @@ func getItemQuantityUnitExistenceConfKey(mapper ExConfMapper, item *dpfm_api_inp
 		}
 
 	case "ItemWeightUnit":
-		if item.ItemWeightUnit == nil {
-			quantityUnit = ""
-		} else {
-			quantityUnit = *item.ItemWeightUnit
-		}
+		//if item.ItemWeightUnit == nil {
+		//	quantityUnit = ""
+		//} else {
+		//	quantityUnit = *item.ItemWeightUnit
+		//}
 	}
 
 	return quantityUnit

@@ -2,6 +2,7 @@ package existence_conf
 
 import (
 	dpfm_api_input_reader "data-platform-api-orders-creates-rmq-kube/DPFM_API_Input_Reader"
+	"strconv"
 	"sync"
 
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
@@ -69,14 +70,14 @@ func (c *ExistenceConf) projectExistenceConfRequest(project string, mapper ExCon
 }
 
 func getItemProjectExistenceConfKey(mapper ExConfMapper, item *dpfm_api_input_reader.Item, exconfErrMsg *string) string {
-	var project string
+	var project int
 
 	switch mapper.Field {
 	case "Project":
 		if item.Project == nil {
-			project = ""
+			project = 0
 		}
 		project = *item.Project
 	}
-	return project
+	return strconv.Itoa(project)
 }

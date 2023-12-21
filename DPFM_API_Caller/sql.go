@@ -635,9 +635,9 @@ func itemIsUpdate(item *dpfm_api_processing_formatter.ItemUpdates) bool {
 func itemPricingElementIsUpdate(itemPricingElement *dpfm_api_processing_formatter.ItemPricingElementUpdates) bool {
 	orderID := itemPricingElement.OrderID
 	orderItem := itemPricingElement.OrderItem
-	supplyChainRelationshipID := itemPricingElement.SupplyChainRelationshipID
-	buyer := itemPricingElement.Buyer
-	seller := itemPricingElement.Seller
+	supplyChainRelationshipID := *itemPricingElement.SupplyChainRelationshipID
+	buyer := *itemPricingElement.Buyer
+	seller := *itemPricingElement.Seller
 	pricingProcedureCounter := itemPricingElement.PricingProcedureCounter
 
 	return !(orderID == 0 || orderItem == 0 || supplyChainRelationshipID == 0 || buyer == 0 || seller == 0 || pricingProcedureCounter == 0)
