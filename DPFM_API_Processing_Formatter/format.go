@@ -61,6 +61,8 @@ func ConvertToItemUpdates(header dpfm_api_input_reader.Header, item dpfm_api_inp
 		OrderItemTextByBuyer:                     data.OrderItemTextByBuyer,
 		OrderItemTextBySeller:                    data.OrderItemTextBySeller,
 		Product:                                  data.Product,
+		ProductionVersion:						  data.ProductionVersion,
+		ProductionVersionItem:					  data.ProductionVersionItem,
 		BillOfMaterial:							  data.BillOfMaterial,
 		BillOfMaterialItem:						  data.BillOfMaterialItem,
 		RequestedDeliveryDate:                    data.RequestedDeliveryDate,
@@ -88,9 +90,10 @@ func ConvertToItemUpdates(header dpfm_api_input_reader.Header, item dpfm_api_inp
 		ProductionPlant:                          data.ProductionPlant,
 		ProductionPlantStorageLocation:           data.ProductionPlantStorageLocation,
 		ProductionPlantBatch:                     data.ProductionPlantBatch,
-		InspectionPlan:                           data.InspectionPlan,
+		InspectionPlantBusinessPartner:           data.InspectionPlantBusinessPartner,
 		InspectionPlant:                          data.InspectionPlant,
-		InspectionOrder:                          data.InspectionOrder,
+		InspectionPlan:                           data.InspectionPlan,
+		InspectionLot:                            data.InspectionLot,
 		Incoterms:                                data.Incoterms,
 		TransactionTaxClassification:             data.TransactionTaxClassification,
 		ProductTaxClassificationBillToCountry:    data.ProductTaxClassificationBillToCountry,
@@ -104,8 +107,8 @@ func ConvertToItemUpdates(header dpfm_api_input_reader.Header, item dpfm_api_inp
 		Project:                                  data.Project,
 		WBSElement:                               data.WBSElement,
 		Equipment:                                data.Equipment,
-		PlannedFreight:                           data.PlannedFreight,
-		FreightOrder:                             data.FreightOrder,
+		FreightAgreement:                         data.FreightAgreement,
+		FreightAgreementItem:                     data.FreightAgreementItem,
 		ItemBlockStatus:                          data.ItemBlockStatus,
 		ItemDeliveryBlockStatus:                  data.ItemDeliveryBlockStatus,
 		ItemBillingBlockStatus:                   data.ItemBillingBlockStatus,
@@ -122,9 +125,6 @@ func ConvertToItemPricingElementUpdates(header dpfm_api_input_reader.Header, ite
 	return &ItemPricingElementUpdates{
 		OrderID:                   dataHeader.OrderID,
 		OrderItem:                 dataItem.OrderItem,
-		SupplyChainRelationshipID: data.SupplyChainRelationshipID,
-		Buyer:                     data.Buyer,
-		Seller:                    data.Seller,
 		PricingProcedureCounter:   data.PricingProcedureCounter,
 		ConditionRateValue:        data.ConditionRateValue,
 		ConditionAmount:           data.ConditionAmount,
@@ -137,12 +137,15 @@ func ConvertToItemScheduleLineUpdates(header dpfm_api_input_reader.Header, item 
 	data := itemScheduleLine
 
 	return &ItemScheduleLineUpdates{
-		OrderID:                             	dataHeader.OrderID,
-		OrderItem:                           	dataItem.OrderItem,
-		ScheduleLine:                        	data.ScheduleLine,
-		RequestedDeliveryDate:               	data.RequestedDeliveryDate,
-		RequestedDeliveryTime:               	data.RequestedDeliveryTime,
-		ScheduleLineOrderQuantityInBaseUnit:	data.ScheduleLineOrderQuantityInBaseUnit,
+		OrderID:                             		dataHeader.OrderID,
+		OrderItem:                           		dataItem.OrderItem,
+		ScheduleLine:                        		data.ScheduleLine,
+		RequestedDeliveryDate:               		data.RequestedDeliveryDate,
+		RequestedDeliveryTime:               		data.RequestedDeliveryTime,
+		ScheduleLineOrderQuantityInBaseUnit:		data.ScheduleLineOrderQuantityInBaseUnit,
+		ExternalReferenceDocument:		  			data.ExternalReferenceDocument,
+		ExternalReferenceDocumentItem:	  			data.ExternalReferenceDocumentItem,
+		ExternalReferenceDocumentItemScheduleLine:	data.ExternalReferenceDocumentItemScheduleLine,
 	}
 }
 
@@ -161,6 +164,8 @@ func ConvertToPartnerUpdates(header dpfm_api_input_reader.Header, partner dpfm_a
 		Language:                data.Language,
 		Currency:                data.Currency,
 		ExternalDocumentID:      data.ExternalDocumentID,
+		AddressID:			     data.AddressID,
+		EmailAddress:			 data.EmailAddress,
 	}
 }
 

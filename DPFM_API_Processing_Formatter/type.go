@@ -50,6 +50,8 @@ type ItemUpdates struct {
 	OrderItemTextByBuyer                     *string  `json:"OrderItemTextByBuyer"`
 	OrderItemTextBySeller                    *string  `json:"OrderItemTextBySeller"`
 	Product                                  *string  `json:"Product"`
+	ProductionVersion				 		 *int     `json:"ProductionVersion"`
+	ProductionVersionItem			 		 *int     `json:"ProductionVersionItem"`
 	BillOfMaterial                           *int     `json:"BillOfMaterial"`
 	BillOfMaterialItem                       *int     `json:"BillOfMaterialItem"`
 	RequestedDeliveryDate                    *string  `json:"RequestedDeliveryDate"`
@@ -77,9 +79,10 @@ type ItemUpdates struct {
 	ProductionPlant                          *string  `json:"ProductionPlant"`
 	ProductionPlantStorageLocation           *string  `json:"ProductionPlantStorageLocation"`
 	ProductionPlantBatch                     *string  `json:"ProductionPlantBatch"`
-	InspectionPlan                           *int     `json:"InspectionPlan"`
+	InspectionPlantBusinessPartner           *int     `json:"InspectionPlantBusinessPartner"`
 	InspectionPlant                          *string  `json:"InspectionPlant"`
-	InspectionOrder                          *int     `json:"InspectionOrder"`
+	InspectionPlan                           *int     `json:"InspectionPlan"`
+	InspectionLot                            *int     `json:"InspectionLot"`
 	Incoterms                                *string  `json:"Incoterms"`
 	TransactionTaxClassification             *string  `json:"TransactionTaxClassification"`
 	ProductTaxClassificationBillToCountry    *string  `json:"ProductTaxClassificationBillToCountry"`
@@ -93,8 +96,8 @@ type ItemUpdates struct {
 	Project                                  *int     `json:"Project"`
 	WBSElement                               *int     `json:"WBSElement"`
 	Equipment                                *int     `json:"Equipment"`
-	PlannedFreight                           *int     `json:"PlannedFreight"`
-	FreightOrder                             *int     `json:"FreightOrder"`
+	FreightAgreement				         *int	  `json:"FreightAgreement"`
+	FreightAgreementItem				     *int	  `json:"FreightAgreementItem"`
 	ItemBlockStatus                          *bool    `json:"ItemBlockStatus"`
 	ItemDeliveryBlockStatus                  *bool    `json:"ItemDeliveryBlockStatus"`
 	ItemBillingBlockStatus                   *bool    `json:"ItemBillingBlockStatus"`
@@ -105,21 +108,21 @@ type ItemUpdates struct {
 type ItemPricingElementUpdates struct {
 	OrderID                   int      `json:"OrderID"`
 	OrderItem                 int      `json:"OrderItem"`
-	SupplyChainRelationshipID *int     `json:"SupplyChainRelationshipID"`
-	Buyer                     *int     `json:"Buyer"`
-	Seller                    *int     `json:"Seller"`
 	PricingProcedureCounter   int      `json:"PricingProcedureCounter"`
 	ConditionRateValue        *float32 `json:"ConditionRateValue"`
 	ConditionAmount           *float32 `json:"ConditionAmount"`
 }
 
 type ItemScheduleLineUpdates struct {
-	OrderID                             int      `json:"OrderID"`
-	OrderItem                           int      `json:"OrderItem"`
-	ScheduleLine                        int      `json:"ScheduleLine"`
-	RequestedDeliveryDate               *string  `json:"RequestedDeliveryDate"`
-	RequestedDeliveryTime               *string  `json:"RequestedDeliveryTime"`
-	ScheduleLineOrderQuantityInBaseUnit *float32 `json:"ScheduleLineOrderQuantityInBaseUnit"`
+	OrderID                             		int      `json:"OrderID"`
+	OrderItem                           		int      `json:"OrderItem"`
+	ScheduleLine                        		int      `json:"ScheduleLine"`
+	RequestedDeliveryDate               		*string  `json:"RequestedDeliveryDate"`
+	RequestedDeliveryTime               		*string  `json:"RequestedDeliveryTime"`
+	ScheduleLineOrderQuantityInBaseUnit			*float32 `json:"ScheduleLineOrderQuantityInBaseUnit"`
+	ExternalReferenceDocument        			*string  `json:"ExternalReferenceDocument"`
+	ExternalReferenceDocumentItem      			*string  `json:"ExternalReferenceDocumentItem"`
+	ExternalReferenceDocumentItemScheduleLine	*string  `json:"ExternalReferenceDocumentItemScheduleLine"`
 }
 
 type PartnerUpdates struct {
@@ -133,6 +136,8 @@ type PartnerUpdates struct {
 	Language                *string `json:"Language"`
 	Currency                *string `json:"Currency"`
 	ExternalDocumentID      *string `json:"ExternalDocumentID"`
+	AddressID				*int	`json:"AddressID"`
+	EmailAddress			*string	`json:"EmailAddress"`
 }
 
 type AddressUpdates struct {

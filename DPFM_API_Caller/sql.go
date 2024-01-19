@@ -447,27 +447,27 @@ func (c *DPFMAPICaller) itemPricingElementUpdateSql(
 	log *logger.Logger,
 ) *[]dpfm_api_output_formatter.ItemPricingElement {
 	req := make([]dpfm_api_processing_formatter.ItemPricingElementUpdates, 0)
-	sessionID := input.RuntimeSessionID
+	//sessionID := input.RuntimeSessionID
 
 	header := input.Header
 	for _, item := range header.Item {
 		for _, itemPricingElement := range item.ItemPricingElement {
 			itemPricingElementData := *dpfm_api_processing_formatter.ConvertToItemPricingElementUpdates(header, item, itemPricingElement)
 
-			if itemPricingElementIsUpdate(&itemPricingElementData) {
-				res, err := c.rmq.SessionKeepRequest(nil, c.conf.RMQ.QueueToSQL()[0], map[string]interface{}{"message": itemPricingElementData, "function": "OrdersItemPricingElement", "runtime_session_id": sessionID})
-				if err != nil {
-					err = xerrors.Errorf("rmq error: %w", err)
-					*errs = append(*errs, err)
-					return nil
-				}
-				res.Success()
-				if !checkResult(res) {
-					output.SQLUpdateResult = getBoolPtr(false)
-					output.SQLUpdateError = "Item Pricing Element Data cannot update"
-					return nil
-				}
-			}
+			//if itemPricingElementIsUpdate(&itemPricingElementData) {
+			//	res, err := c.rmq.SessionKeepRequest(nil, c.conf.RMQ.QueueToSQL()[0], map[string]interface{}{"message": itemPricingElementData, "function": "OrdersItemPricingElement", "runtime_session_id": sessionID})
+			//	if err != nil {
+			//		err = xerrors.Errorf("rmq error: %w", err)
+			//		*errs = append(*errs, err)
+			//		return nil
+			//	}
+			//	res.Success()
+			//	if !checkResult(res) {
+			//		output.SQLUpdateResult = getBoolPtr(false)
+			//		output.SQLUpdateError = "Item Pricing Element Data cannot update"
+			//		return nil
+			//	}
+			//}
 			req = append(req, itemPricingElementData)
 		}
 	}
@@ -632,16 +632,17 @@ func itemIsUpdate(item *dpfm_api_processing_formatter.ItemUpdates) bool {
 	return !(orderID == 0 || orderItem == 0)
 }
 
-func itemPricingElementIsUpdate(itemPricingElement *dpfm_api_processing_formatter.ItemPricingElementUpdates) bool {
-	orderID := itemPricingElement.OrderID
-	orderItem := itemPricingElement.OrderItem
-	supplyChainRelationshipID := *itemPricingElement.SupplyChainRelationshipID
-	buyer := *itemPricingElement.Buyer
-	seller := *itemPricingElement.Seller
-	pricingProcedureCounter := itemPricingElement.PricingProcedureCounter
-
-	return !(orderID == 0 || orderItem == 0 || supplyChainRelationshipID == 0 || buyer == 0 || seller == 0 || pricingProcedureCounter == 0)
-}
+//func itemPricingElementIsUpdate(itemPricingElement *dpfm_api_processing_formatter.ItemPricingElementUpdates) bool {
+//	orderID := itemPricingElement.OrderID
+//	orderItem := itemPricingElement.OrderItem
+//	//supplyChainRelationshipID := *itemPricingElement.SupplyChainRelationshipID
+//	//buyer := *itemPricingElement.Buyer
+//	//seller := *itemPricingElement.Seller
+//	pricingProcedureCounter := itemPricingElement.PricingProcedureCounter
+//
+//	//return !(orderID == 0 || orderItem == 0 || supplyChainRelationshipID == 0 || buyer == 0 || seller == 0 || pricingProcedureCounter == 0)
+//	//return !(orderID == 0 || orderItem == 0 || supplyChainRelationshipID == 0 || buyer == 0 || seller == 0 || pricingProcedureCounter == 0)
+//}
 
 func itemScheduleLineIsUpdate(itemScheduleLine *dpfm_api_processing_formatter.ItemScheduleLineUpdates) bool {
 	orderID := itemScheduleLine.OrderID
