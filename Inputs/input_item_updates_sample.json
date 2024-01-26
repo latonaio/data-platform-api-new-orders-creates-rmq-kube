@@ -17,10 +17,7 @@
 		"Item": [
 			{
 				"OrderItem": 1,
-				"OrderStatus": "DFT",
-				"RequestedDeliveryDate": "2024-01-22",
-				"RequestedDeliveryTime": "15:00:00",
-				"OrderQuantityInDeliveryUnit": 300.10
+				"OrderStatus": "DFT"
 			}
 		]
 	},

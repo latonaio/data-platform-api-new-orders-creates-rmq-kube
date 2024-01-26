@@ -51,6 +51,7 @@ func ConvertToItemUpdates(header dpfm_api_input_reader.Header, item dpfm_api_inp
 		OrderStatus:                 data.OrderStatus,
 		RequestedDeliveryDate:       data.RequestedDeliveryDate,
 		RequestedDeliveryTime:       data.RequestedDeliveryTime,
+		OrderQuantityInBaseUnit:     data.OrderQuantityInBaseUnit,
 		OrderQuantityInDeliveryUnit: data.OrderQuantityInDeliveryUnit,
 	}
 }

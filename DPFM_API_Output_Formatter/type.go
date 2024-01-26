@@ -105,6 +105,7 @@ type Item struct {
 	OrderStatus                 *string  `json:"OrderStatus"`
 	RequestedDeliveryDate       *string  `json:"RequestedDeliveryDate"`
 	RequestedDeliveryTime       *string  `json:"RequestedDeliveryTime"`
+	OrderQuantityInBaseUnit     *float32 `json:"OrderQuantityInBaseUnit"`
 	OrderQuantityInDeliveryUnit *float32 `json:"OrderQuantityInDeliveryUnit"`
 }
 
@@ -152,7 +153,7 @@ type ItemScheduleLine struct {
 	RequestedDeliveryDate                           string   `json:"RequestedDeliveryDate"`
 	RequestedDeliveryTime                           string   `json:"RequestedDeliveryTime"`
 	ConfirmedDeliveryDate                           *string  `json:"ConfirmedDeliveryDate"`
-	ConfirmedDeliveryTime                           *string  `json:"ConfirmedDeliveryDate"`
+	ConfirmedDeliveryTime                           *string  `json:"ConfirmedDeliveryTime"`
 	ScheduleLineOrderQuantityInBaseUnit             float32  `json:"ScheduleLineOrderQuantityInBaseUnit"`
 	OriginalOrderQuantityInBaseUnit                 float32  `json:"OriginalOrderQuantityInBaseUnit"`
 	ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit *float32 `json:"ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit"`
