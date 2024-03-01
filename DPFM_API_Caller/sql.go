@@ -6,6 +6,7 @@ import (
 	dpfm_api_output_formatter "data-platform-api-orders-creates-rmq-kube/DPFM_API_Output_Formatter"
 	dpfm_api_processing_formatter "data-platform-api-orders-creates-rmq-kube/DPFM_API_Processing_Formatter"
 	"data-platform-api-orders-creates-rmq-kube/sub_func_complementer"
+	"fmt"
 	"sync"
 
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
@@ -28,7 +29,79 @@ func (c *DPFMAPICaller) createSqlProcess(
 	var itemScheduleLine *[]dpfm_api_output_formatter.ItemScheduleLine
 	var address *[]dpfm_api_output_formatter.Address
 	var partner *[]dpfm_api_output_formatter.Partner
-	for _, fn := range accepter {
+
+	handleAccepter := referenceDocumentHandle(
+		input,
+		subfuncSDC,
+		accepter,
+	)
+
+	var calculateOrderIDQueryGets *sub_func_complementer.CalculateOrderIDQueryGets
+	var orderIssuedID int
+
+	if len(handleAccepter) > 0 {
+		calculateOrderIDQueryGets = c.CalculateOrderID(errs)
+
+		if calculateOrderIDQueryGets == nil {
+			err := xerrors.Errorf("calculateOrderIDQueryGets is nil")
+			*errs = append(*errs, err)
+			return nil
+		}
+
+		orderIssuedID = calculateOrderIDQueryGets.OrderIDLatestNumber + 1
+
+		subfuncSDCHeader := c.getQuotationsHeader(
+			input,
+			errs,
+			orderIssuedID,
+		)
+
+		if len(*subfuncSDCHeader) > 0 {
+			subfuncSDC.Message.Header = &(*subfuncSDCHeader)[0]
+		}
+
+		subfuncSDCItem := c.getQuotationsItem(
+			input,
+			errs,
+			orderIssuedID,
+		)
+
+		if len(*subfuncSDCItem) > 0 {
+			subfuncSDC.Message.Item = subfuncSDCItem
+		}
+
+		subfuncSDCItemPricingElement := c.getQuotationsItemPricingElement(
+			input,
+			errs,
+			orderIssuedID,
+		)
+
+		if len(*subfuncSDCItemPricingElement) > 0 {
+			subfuncSDC.Message.ItemPricingElement = subfuncSDCItemPricingElement
+		}
+
+		subfuncSDCPartner := c.getQuotationsPartner(
+			input,
+			errs,
+			orderIssuedID,
+		)
+
+		if len(*subfuncSDCPartner) > 0 {
+			subfuncSDC.Message.Partner = subfuncSDCPartner
+		}
+
+		// itemScheduleLine
+		subfuncSDCItemScheduleLine := c.setOrdersItemDataForItemScheduleLine(
+			subfuncSDCItem,
+			errs,
+		)
+
+		if len(*subfuncSDCItemScheduleLine) > 0 {
+			subfuncSDC.Message.ItemScheduleLine = subfuncSDCItemScheduleLine
+		}
+	}
+
+	for _, fn := range handleAccepter {
 		switch fn {
 		case "Header":
 			header = c.headerCreateSql(nil, mtx, input, output, subfuncSDC, errs, log)
@@ -43,7 +116,14 @@ func (c *DPFMAPICaller) createSqlProcess(
 		case "Address":
 			address = c.addressCreateSql(nil, mtx, input, output, subfuncSDC, errs, log)
 		default:
+		}
+	}
 
+	if calculateOrderIDQueryGets != nil {
+		err := c.UpdateLatestNumber(errs, orderIssuedID)
+		if err != nil {
+			*errs = append(*errs, err)
+			return nil
 		}
 	}
 
@@ -632,17 +712,13 @@ func itemIsUpdate(item *dpfm_api_processing_formatter.ItemUpdates) bool {
 	return !(orderID == 0 || orderItem == 0)
 }
 
-//func itemPricingElementIsUpdate(itemPricingElement *dpfm_api_processing_formatter.ItemPricingElementUpdates) bool {
-//	orderID := itemPricingElement.OrderID
-//	orderItem := itemPricingElement.OrderItem
-//	//supplyChainRelationshipID := *itemPricingElement.SupplyChainRelationshipID
-//	//buyer := *itemPricingElement.Buyer
-//	//seller := *itemPricingElement.Seller
-//	pricingProcedureCounter := itemPricingElement.PricingProcedureCounter
-//
-//	//return !(orderID == 0 || orderItem == 0 || supplyChainRelationshipID == 0 || buyer == 0 || seller == 0 || pricingProcedureCounter == 0)
-//	//return !(orderID == 0 || orderItem == 0 || supplyChainRelationshipID == 0 || buyer == 0 || seller == 0 || pricingProcedureCounter == 0)
-//}
+func itemPricingElementIsUpdate(itemPricingElement *dpfm_api_processing_formatter.ItemPricingElementUpdates) bool {
+	orderID := itemPricingElement.OrderID
+	orderItem := itemPricingElement.OrderItem
+	pricingProcedureCounter := itemPricingElement.PricingProcedureCounter
+
+	return !(orderID == 0 || orderItem == 0 || pricingProcedureCounter == 0)
+}
 
 func itemScheduleLineIsUpdate(itemScheduleLine *dpfm_api_processing_formatter.ItemScheduleLineUpdates) bool {
 	orderID := itemScheduleLine.OrderID
@@ -665,4 +741,208 @@ func addressIsUpdate(address *dpfm_api_processing_formatter.AddressUpdates) bool
 	addressID := address.AddressID
 
 	return !(orderID == 0 || addressID == 0)
+}
+
+func referenceDocumentHandle(
+	input *dpfm_api_input_reader.SDC,
+	subfuncSDC *sub_func_complementer.SDC,
+	accepter []string,
+) []string {
+	var handleAccepter []string
+
+	if input.InputParameters.ReferenceDocument != nil {
+		handleAccepter = append(handleAccepter, "Header")
+		handleAccepter = append(handleAccepter, "Item")
+		handleAccepter = append(handleAccepter, "ItemPricingElement")
+		handleAccepter = append(handleAccepter, "ItemScheduleLine")
+		handleAccepter = append(handleAccepter, "Partner")
+	} else {
+		handleAccepter = accepter
+	}
+
+	return handleAccepter
+}
+
+func (c *DPFMAPICaller) getQuotationsHeader(
+	input *dpfm_api_input_reader.SDC,
+	errs *[]error,
+	orderIssuedID int,
+) *[]sub_func_complementer.Header {
+	quotation := input.InputParameters.ReferenceDocument
+
+	rows, err := c.db.Query(
+		`SELECT *
+		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_quotations_header_data
+		WHERE Quotation = ?;`, quotation,
+	)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+	defer rows.Close()
+
+	data, err := dpfm_api_output_formatter.ConvertToHeaderFromQuotations(rows, orderIssuedID)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	return data
+}
+
+func (c *DPFMAPICaller) getQuotationsItem(
+	input *dpfm_api_input_reader.SDC,
+	errs *[]error,
+	orderIssuedID int,
+) *[]sub_func_complementer.Item {
+	quotation := input.InputParameters.ReferenceDocument
+
+	rows, err := c.db.Query(
+		`SELECT *
+		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_quotations_item_data
+		WHERE Quotation = ?;`, quotation,
+	)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+	defer rows.Close()
+
+	data, err := dpfm_api_output_formatter.ConvertToItemFromQuotations(rows, orderIssuedID)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	return data
+}
+
+func (c *DPFMAPICaller) getQuotationsItemPricingElement(
+	input *dpfm_api_input_reader.SDC,
+	errs *[]error,
+	orderIssuedID int,
+) *[]sub_func_complementer.ItemPricingElement {
+	quotation := input.InputParameters.ReferenceDocument
+
+	rows, err := c.db.Query(
+		`SELECT *
+		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_quotations_item_pricing_element_data
+		WHERE Quotation = ?;`, quotation,
+	)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+	defer rows.Close()
+
+	data, err := dpfm_api_output_formatter.ConvertToItemPricingElementFromQuotations(rows, orderIssuedID)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	return data
+}
+
+func (c *DPFMAPICaller) getQuotationsPartner(
+	input *dpfm_api_input_reader.SDC,
+	errs *[]error,
+	orderIssuedID int,
+) *[]sub_func_complementer.Partner {
+	quotation := input.InputParameters.ReferenceDocument
+
+	rows, err := c.db.Query(
+		`SELECT *
+		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_quotations_partner_data
+		WHERE Quotation = ?;`, quotation,
+	)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+	defer rows.Close()
+
+	data, err := dpfm_api_output_formatter.ConvertToPartnerFromQuotations(rows, orderIssuedID)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	return data
+}
+
+func (c *DPFMAPICaller) setOrdersItemDataForItemScheduleLine(
+	complementerOrdersItem *[]sub_func_complementer.Item,
+	errs *[]error,
+) *[]sub_func_complementer.ItemScheduleLine {
+	data, err := dpfm_api_output_formatter.ConvertToItemScheduleLineFromQuotations(complementerOrdersItem)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	return data
+}
+
+func (c *DPFMAPICaller) CalculateOrderID(
+	errs *[]error,
+) *sub_func_complementer.CalculateOrderIDQueryGets {
+	pm := &sub_func_complementer.CalculateOrderIDQueryGets{}
+
+	rows, err := c.db.Query(
+		`SELECT *
+		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_number_range_latest_number_data
+		WHERE (ServiceLabel, FieldNameWithNumberRange) = (?, ?);`, "ORDERS", "OrderID",
+	)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	for i := 0; true; i++ {
+		if !rows.Next() {
+			if i == 0 {
+				*errs = append(*errs, fmt.Errorf("'data_platform_number_range_latest_number_data'テーブルに対象のレコードが存在しません。"))
+				return nil
+			} else {
+				break
+			}
+		}
+		err = rows.Scan(
+			&pm.NumberRangeID,
+			&pm.ServiceLabel,
+			&pm.FieldNameWithNumberRange,
+			&pm.OrderIDLatestNumber,
+		)
+		if err != nil {
+			*errs = append(*errs, err)
+			return nil
+		}
+	}
+
+	return pm
+}
+
+func (c *DPFMAPICaller) UpdateLatestNumber(
+	errs *[]error,
+	orderIssuedID int,
+) error {
+	//rows, err := c.db.Query(
+	//	`SELECT *
+	//	FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_number_range_latest_number_data
+	//	WHERE (ServiceLabel, FieldNameWithNumberRange) = (?, ?);`, "ORDERS", "OrderID",
+	//)
+
+	_, err := c.db.Exec(`
+			UPDATE data_platform_number_range_latest_number_data SET LatestNumber=(?)
+			WHERE (ServiceLabel, FieldNameWithNumberRange) = (?, ?);`,
+		orderIssuedID,
+		"ORDERS",
+		"OrderID",
+	)
+	if err != nil {
+		return xerrors.Errorf("'data_platform_number_range_latest_number_data'テーブルの更新に失敗しました。")
+	}
+
+	return nil
 }

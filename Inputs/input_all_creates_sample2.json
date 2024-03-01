@@ -38,11 +38,11 @@
 		"ModifyIsAllowed": null,
 		"LocalLoggingIsAllowed": null,
 		"RemoteNotificationIsAllowed": null,
-		"DestributeOnlyIfEncrypted": null,
-		"AttachPolicyWhenDestribute": null
+		"DistributeOnlyIfEncrypted": null,
+		"AttachPolicyWhenDistribute": null
 	},
-	"OrdersInputParameters": {
-		"ReferenceDocument": null,
+	"InputParameters": {
+		"ReferenceDocument": 1,
 		"ReferenceDocumentItem": null
 	},
 	"Orders": {
@@ -83,6 +83,8 @@
 		"PaymentMethod": "",
 		"Contract": null,
 		"ContractItem": null,
+		"Project": null,
+		"WBSElement": null,
         "ProductionVersion": null,
         "ProductionVersionItem": null,
         "ProductionOrder": null,

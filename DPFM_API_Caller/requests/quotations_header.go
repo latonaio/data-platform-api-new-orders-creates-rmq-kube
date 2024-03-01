@@ -1,10 +1,10 @@
 package requests
 
-type Header struct {
-	OrderID                          int      `json:"OrderID"`
-	OrderDate                        string   `json:"OrderDate"`
-	OrderType                        string   `json:"OrderType"`
-	OrderStatus                      string   `json:"OrderStatus"`
+type QuotationsHeader struct {
+	Quotation                        int      `json:"Quotation"`
+	QuotationDate                    string   `json:"QuotationDate"`
+	QuotationType                    string   `json:"QuotationType"`
+	QuotationStatus                  string   `json:"QuotationStatus"`
 	SupplyChainRelationshipID        int      `json:"SupplyChainRelationshipID"`
 	SupplyChainRelationshipBillingID *int     `json:"SupplyChainRelationshipBillingID"`
 	SupplyChainRelationshipPaymentID *int     `json:"SupplyChainRelationshipPaymentID"`
@@ -17,6 +17,8 @@ type Header struct {
 	Payer                            *int     `json:"Payer"`
 	Payee                            *int     `json:"Payee"`
 	ContractType                     *string  `json:"ContractType"`
+	BindingPeriodValidityStartDate   *string  `json:"BindingPeriodValidityStartDate"`
+	BindingPeriodValidityEndDate     *string  `json:"BindingPeriodValidityEndDate"`
 	OrderValidityStartDate           *string  `json:"OrderValidityStartDate"`
 	OrderValidityEndDate             *string  `json:"OrderValidityEndDate"`
 	InvoicePeriodStartDate           *string  `json:"InvoicePeriodStartDate"`
@@ -24,46 +26,33 @@ type Header struct {
 	TotalNetAmount                   float32  `json:"TotalNetAmount"`
 	TotalTaxAmount                   float32  `json:"TotalTaxAmount"`
 	TotalGrossAmount                 float32  `json:"TotalGrossAmount"`
-	HeaderDeliveryStatus             string   `json:"HeaderDeliveryStatus"`
-	HeaderBillingStatus              string   `json:"HeaderBillingStatus"`
-	HeaderDocReferenceStatus         string   `json:"HeaderDocReferenceStatus"`
+	HeaderOrderIsDefined             *bool    `json:"HeaderOrderIsDefined"`
 	TransactionCurrency              string   `json:"TransactionCurrency"`
 	PricingDate                      string   `json:"PricingDate"`
 	PriceDetnExchangeRate            *float32 `json:"PriceDetnExchangeRate"`
 	RequestedDeliveryDate            string   `json:"RequestedDeliveryDate"`
-	RequestedDeliveryTime            string   `json:"RequestedDeliveryTime"`
-	HeaderCompleteDeliveryIsDefined  *bool    `json:"HeaderCompleteDeliveryIsDefined"`
+	OrderProbabilityInPercent        *float32 `json:"OrderProbabilityInPercent"`
+	ExpectedOrderNetAmount           *float32 `json:"ExpectedOrderNetAmount"`
 	Incoterms                        *string  `json:"Incoterms"`
 	PaymentTerms                     string   `json:"PaymentTerms"`
 	PaymentMethod                    string   `json:"PaymentMethod"`
-	Contract		                 *int     `json:"Contract"`
-	ContractItem	                 *int     `json:"ContractItem"`
+	Contract                         *int     `json:"Contract"`
+	ContractItem                     *int     `json:"ContractItem"`
 	Project                          *int     `json:"Project"`
-	WBSElement                       *int     `json:"WBSElement"`
-	ProductionVersion				 *int     `json:"ProductionVersion"`
-	ProductionVersionItem			 *int     `json:"ProductionVersionItem"`
-	ProductionOrder					 *int     `json:"ProductionOrder"`
-	ProductionOrderItem				 *int     `json:"ProductionOrderItem"`
-	Operations						 *int     `json:"Operations"`
-	OperationsItem					 *int     `json:"OperationsItem"`
-	OperationID						 *int     `json:"OperationID"`
+	WBSElement                       *int	  `json:"WBSElement"`
 	ReferenceDocument                *int     `json:"ReferenceDocument"`
-	ReferenceDocumentItem            *int     `json:"ReferenceDocumentItem"`
 	AccountAssignmentGroup           string   `json:"AccountAssignmentGroup"`
 	AccountingExchangeRate           *float32 `json:"AccountingExchangeRate"`
-	InvoiceDocumentDate              string   `json:"InvoiceDocumentDate"`
+	InvoiceDocumentDate              *string  `json:"InvoiceDocumentDate"`
 	IsExportImport                   *bool    `json:"IsExportImport"`
 	HeaderText                       *string  `json:"HeaderText"`
+	HeaderIsClosed                   *bool    `json:"HeaderIsClosed"`
 	HeaderBlockStatus                *bool    `json:"HeaderBlockStatus"`
-	HeaderDeliveryBlockStatus        *bool    `json:"HeaderDeliveryBlockStatus"`
-	HeaderBillingBlockStatus         *bool    `json:"HeaderBillingBlockStatus"`
 	ExternalReferenceDocument        *string  `json:"ExternalReferenceDocument"`
 	CertificateAuthorityChain        *string  `json:"CertificateAuthorityChain"`
-	UsageControlChain        		 *string  `json:"UsageControlChain"`
+	UsageControlChain                *string  `json:"UsageControlChain"`
 	CreationDate                     string   `json:"CreationDate"`
-	CreationTime                     string   `json:"CreationTime"`
 	LastChangeDate                   string   `json:"LastChangeDate"`
-	LastChangeTime                   string   `json:"LastChangeTime"`
 	IsCancelled                      *bool    `json:"IsCancelled"`
 	IsMarkedForDeletion              *bool    `json:"IsMarkedForDeletion"`
 }

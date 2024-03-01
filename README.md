@@ -1,9 +1,8 @@
 # data-platform-api-orders-creates-rmq-kube
 
-data-platform-api-orders-creates-rmq-kube は、周辺業務システム　を データ連携基盤 と統合することを目的に、API でオーダーデータを登録/更新するマイクロサービスです。
+data-platform-api-orders-creates-rmq-kube は、周辺業務システム　を データ連携基盤 と統合することを目的に、API でオーダーデータを登録するマイクロサービスです。
 
 * https://xxx.xxx.io/api/API_ORDERS_SRV/creates/
-* https://xxx.xxx.io/api/API_ORDERS_SRV/updates/
 
 ## 動作環境
 
@@ -16,7 +15,6 @@ data-platform-api-orders-creates-rmq-kube の動作環境は、次の通りで�
 data-platform-api-orders-creates-rmq-kube が対応する APIサービス は、次のものです。
 
 * APIサービス URL: https://xxx.xxx.io/api/API_ORDERS_SRV/creates/
-* APIサービス URL: https://xxx.xxx.io/api/API_ORDERS_SRV/updates/
 
 ## 本レポジトリ に 含まれる API名
 data-platform-api-orders-creates-rmq-kube には、次の API をコールするためのリソースが含まれています。  
@@ -33,7 +31,7 @@ data-platform-api-orders-creates-rmq-kube において、API への値入力条�
 
 ## データ連携基盤のAPIの選択的コール
 
-Latona および AION の データ連携基盤 関連リソースでは、Inputs フォルダ下の sample.json の accepter に登録/更新したいデータの種別（＝APIの種別）を入力し、指定することができます。  
+Latona および AION の データ連携基盤 関連リソースでは、Inputs フォルダ下の sample.json の accepter に登録したいデータの種別（＝APIの種別）を入力し、指定することができます。  
 なお、同 accepter にAll(もしくは空白)の値を入力することで、全データ（＝全APIの種別）をまとめて登録/更新することができます。  
 
 * sample.jsonの記載例(1)  
