@@ -450,6 +450,8 @@ func ConvertToItemFromQuotations(
 			OrderQuantityInBaseUnit:                 data.QuotationQuantityInBaseUnit,
 			OrderQuantityInDeliveryUnit:             data.QuotationQuantityInDeliveryUnit,
 			QuantityPerPackage:                      1,
+			ItemGrossWeight:                         data.ProductNetWeight,
+			ItemNetWeight:                           data.ProductNetWeight,
 			NetAmount:                               data.NetAmount,
 			TaxAmount:                               data.TaxAmount,
 			GrossAmount:                             data.GrossAmount,
